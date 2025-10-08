@@ -205,3 +205,117 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+env/
+.venv/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Database
+*.db
+*.sqlite3
+
+# Environment variables
+.env
+.env.local
+.env.production
+
+# Next.js
+.frontend/.next/
+.frontend/out/
+.frontend/.turbo/
+
+# Dependencies
+.frontend/node_modules/
+
+# Production builds
+.frontend/.build
+
+# Debug files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+
+# Logs
+logs
+*.log
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Docker
+docker-compose.override.yml
+
+# gRPC generated files
+*_pb2.py
+*_pb2_grpc.py
+
+# Temporary files
+*.tmp
+*.temp
+uploaded_files/
+temp/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Backup files
+*.bak
+*.backup
+
+# C++ build files
+engine/build/
+engine/cmake-build-*/
+*.o
+*.a
+*.dylib
+*.dll
+*.exe
+
+# Protocol Buffers
+*.pb.cc
+*.pb.h
