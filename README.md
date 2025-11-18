@@ -1,219 +1,243 @@
-# Jovin-Fluo 🚀
+# 🚀 Jovin Fluo
 
-A modern, open-source data analysis and visualization platform that combines the power of C++ performance with Python development speed and React's user experience.
+<div align="center">
 
-![Jovin-Fluo Architecture](https://img.shields.io/badge/Architecture-Hybrid%20Onion-blue)
-![Python](https://img.shields.io/badge/Python-3.11%2B-green)
-![Next.js](https://img.shields.io/badge/Next.js-14%2B-black)
-![C++](https://img.shields.io/badge/C++-17%2B-red)
+**An open-source, enterprise-grade data platform that evolves from a simple analytics tool into a complete alternative to Power BI and Tableau**
 
-## 🌟 What is Jovin-Fluo?
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.11+](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![Next.js 14+](https://img.shields.io/badge/Next.js-14+-black.svg)](https://nextjs.org/)
+[![C++ 17+](https://img.shields.io/badge/C++-17+-red.svg)](https://isocpp.org/)
 
-Jovin-Fluo is a free, web-based alternative to commercial BI tools like Power BI and Looker Studio. It enables users to upload datasets, get intelligent analysis suggestions, create custom calculations, and build interactive dashboards - all through a no-code interface.
+[Documentation](#-documentation) • [Quick Start](#-quick-start) • [Architecture](#-architecture) • [Contributing](#-contributing)
 
-### Key Features
-- 📊 **Smart Data Analysis** - Automated calculation and visualization suggestions
-- ⚡ **High-Performance Engine** - C++ backend for lightning-fast data processing
-- 🎨 **Drag & Drop Builder** - Intuitive chart and dashboard creation
-- 🔧 **Custom Formulas** - Excel/DAX-like formula editor
-- 📁 **Multi-Format Support** - CSV, Excel, and more
-- 👥 **Role-Based Access** - Secure collaboration features
-- 📤 **Export Capabilities** - PDF reports and data exports
+</div>
 
-## 🏗️ Architecture
+---
 
-Jovin-Fluo follows a hybrid microservices architecture with Onion Architecture principles:
+## 🌟 What is Jovin Fluo?
+
+**Jovin Fluo** is a comprehensive, open-source data platform designed to democratize data analytics and engineering. Starting as a powerful file-based analytics tool, it will evolve into a complete enterprise data platform with database connectivity, ETL/ELT pipelines, advanced data engineering capabilities, and full business intelligence features.
+
+### 🎯 Core Vision
+
+Jovin Fluo aims to be the **one-stop solution** for organizations that need:
+- **Self-service analytics** without vendor lock-in
+- **Data engineering capabilities** without complex infrastructure
+- **Enterprise BI features** at open-source pricing
+- **Scalable architecture** that grows with your needs
+
+### 📊 Evolution Path
+
+#### **Phase 1: MVP - File-Based Analytics** (Current)
+Transform raw data files into actionable insights:
+
+- **Multi-format Support**: Upload CSV, Excel, JSON, Parquet, and more
+- **Intelligent Data Profiling**: Automatic column type detection, statistics, and quality checks
+- **Smart Suggestions**: AI-powered calculation and visualization recommendations
+- **Custom Formula Engine**: Excel/DAX-like formula editor with real-time validation
+- **Drag-and-Drop Builder**: Intuitive dashboard creation with 20+ chart types
+- **Real-time Preview**: Instant visualization updates as you build
+- **Export Capabilities**: PDF reports, CSV/Excel exports, and reproducible Python code
+
+#### **Phase 2: Database Integration** (Next)
+Connect directly to your data sources:
+
+- **Universal Database Connectors**: PostgreSQL, MySQL, SQL Server, MongoDB, Snowflake, BigQuery, Redshift, and more
+- **Query Builder**: Visual SQL builder with syntax highlighting and validation
+- **Real-time Data Refresh**: Scheduled and on-demand data synchronization
+- **Connection Pooling**: Efficient database connection management
+- **Query Optimization**: Automatic query performance analysis and suggestions
+- **Data Source Catalog**: Centralized management of all data connections
+
+#### **Phase 3: ETL/ELT Pipeline Builder**
+Build data transformation pipelines visually:
+
+- **Visual Pipeline Designer**: Drag-and-drop interface for creating data pipelines
+- **Transformation Library**: 50+ pre-built transformations (filter, join, aggregate, pivot, etc.)
+- **Data Quality Framework**: Built-in data validation, cleansing, and quality checks
+- **Scheduling & Orchestration**: Cron-based and event-driven pipeline execution
+- **Data Lineage Tracking**: Complete visibility into data flow and dependencies
+- **Error Handling & Retry Logic**: Robust error management with automatic retries
+- **Pipeline Templates**: Pre-built templates for common ETL patterns
+
+#### **Phase 4: Advanced Data Engineering**
+Enterprise-grade data engineering capabilities:
+
+- **Data Warehouse Integration**: Native support for data warehouses (Snowflake, BigQuery, Redshift)
+- **Data Lake Support**: Integration with S3, Azure Data Lake, Google Cloud Storage
+- **Streaming Data Processing**: Real-time data ingestion and processing (Kafka, Pulsar)
+- **Advanced Transformations**: Window functions, machine learning transformations, custom Python/SQL scripts
+- **Data Governance**: Data catalog, metadata management, and compliance tracking
+- **Performance Optimization**: Query optimization, caching strategies, and materialized views
+- **Multi-tenant Architecture**: Secure, isolated workspaces for different teams/organizations
+
+#### **Phase 5: Complete BI Platform**
+Full-featured business intelligence platform:
+
+- **Advanced Analytics**: Statistical analysis, forecasting, and predictive modeling
+- **Machine Learning Integration**: Built-in ML models for anomaly detection, clustering, and predictions
+- **Collaborative Workspaces**: Real-time collaboration with comments, annotations, and sharing
+- **Role-Based Access Control**: Granular permissions and security policies
+- **Embedded Analytics**: White-label dashboards and APIs for embedding in other applications
+- **Mobile Support**: Responsive design with native mobile apps
+- **Enterprise Features**: SSO, audit logs, compliance reporting, and SLA management
+
+### 🎨 Key Features
+
+#### **For Data Analysts**
+- No-code dashboard creation
+- Excel-like formula editor
+- Pre-built visualization templates
+- One-click data exports
+
+#### **For Data Engineers**
+- Visual ETL/ELT pipeline builder
+- Database connectivity framework
+- Data quality and validation tools
+- Pipeline scheduling and monitoring
+
+#### **For Business Users**
+- Self-service analytics
+- Drag-and-drop interface
+- Automated insights and suggestions
+- Mobile-friendly dashboards
+
+#### **For Developers**
+- RESTful and GraphQL APIs
+- Embeddable components
+- Plugin system for extensions
+- Comprehensive SDK and documentation
+
+### 🏗️ Architecture
+
+Jovin Fluo follows a **hybrid microservices architecture** with **Onion Architecture** principles:
 
 ```
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   Next.js 14    │    │   FastAPI Python │    │   C++ Engine    │
-│    Frontend     │◄──►│     Backend      │◄──►│  (gRPC Server)  │
-│                 │    │                  │    │                 │
-│ • React 18      │    │ • Business Logic │    │ • Data Processing│
-│ • TypeScript    │    │ • API Routes     │    │ • Calculations   │
-│ • Tailwind CSS  │    │ • Auth & RBAC    │    │ • Aggregations   │
-│ • Recharts      │    │ • Database ORM   │    │ • Formula Engine │
-└─────────────────┘    └──────────────────┘    └─────────────────┘
-         │                        │
-         │                        │
-         └─────────────┬──────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                    Frontend Layer                            │
+│  Next.js 14 + React 18 + TypeScript + Tailwind CSS          │
+│  • Dashboard Builder • Formula Editor • Data Explorer       │
+└──────────────────────┬──────────────────────────────────────┘
+                       │ REST API / GraphQL
+┌──────────────────────▼──────────────────────────────────────┐
+│                   Backend API Layer                          │
+│  FastAPI (Python 3.11+) + SQLAlchemy 2.0                    │
+│  • Business Logic • Authentication • API Gateway             │
+│  • Pipeline Orchestration • Data Source Management           │
+└──────────────────────┬──────────────────────────────────────┘
+                       │ gRPC
+┌──────────────────────▼──────────────────────────────────────┐
+│              High-Performance Engine Layer                   │
+│  C++ 17+ (gRPC Server) + Apache Arrow                       │
+│  • Data Processing • Aggregations • Formula Execution        │
+│  • Query Optimization • Memory Management                    │
+└──────────────────────┬──────────────────────────────────────┘
                        │
-             ┌─────────▼─────────┐
-             │   PostgreSQL 15   │
-             │                   │
-             │ • Users & Roles   │
-             │ • Projects & Data │
-             │ • Dashboard Config│
-             └───────────────────┘
+┌──────────────────────▼──────────────────────────────────────┐
+│                    Data Layer                                 │
+│  PostgreSQL 15 • Redis • Object Storage (S3/MinIO)          │
+│  • Metadata • Caching • File Storage                        │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-## 🚀 Quick Start
+### 🛠️ Technology Stack
 
-### Prerequisites
-- Node.js 18+
+#### **Frontend**
+- **Framework**: Next.js 14 (App Router) with React 18
+- **Language**: TypeScript 5+
+- **Styling**: Tailwind CSS 3+ with shadcn/ui components
+- **State Management**: Zustand + React Query (TanStack Query)
+- **Visualization**: Recharts + Vega-Lite + D3.js
+- **Drag & Drop**: React DnD + React Grid Layout
+- **Code Editor**: Monaco Editor (VS Code editor)
+- **Forms**: React Hook Form + Zod validation
+
+#### **Backend**
+- **Framework**: FastAPI (Python 3.11+)
+- **ORM**: SQLAlchemy 2.0 with Alembic migrations
+- **Authentication**: JWT + OAuth2 with support for SSO
+- **API**: RESTful + GraphQL (Strawberry)
+- **Task Queue**: Celery + Redis (or Prefect for orchestration)
+- **Data Processing**: Pandas, DuckDB, PyArrow, Polars
+- **Export**: WeasyPrint (PDF), ReportLab, Jinja2 templates
+
+#### **Data Engine**
+- **Language**: C++ 17/20
+- **Communication**: gRPC + Protocol Buffers
+- **Data Format**: Apache Arrow (zero-copy data transfer)
+- **Parsing**: Fast CSV parser, simdjson
+- **Memory**: Smart pointers, RAII patterns
+- **Performance**: Multi-threading, vectorization, SIMD
+
+#### **Infrastructure**
+- **Containerization**: Docker + Docker Compose
+- **Orchestration**: Kubernetes (production)
+- **CI/CD**: GitHub Actions
+- **Monitoring**: Prometheus + Grafana
+- **Logging**: Structured logging with ELK stack
+- **Database**: PostgreSQL 15+ (primary), Redis (caching)
+- **Storage**: MinIO (local) / S3 (cloud) for object storage
+
+### 🚀 Quick Start
+
+#### Prerequisites
+- Node.js 18+ and npm/yarn
 - Python 3.11+
 - Docker & Docker Compose
-- C++17 compatible compiler
+- C++17 compatible compiler (GCC/Clang/MSVC)
 
-### Installation
+#### Installation
 
-1. **Clone the repository**
 ```bash
+# Clone the repository
 git clone https://github.com/your-username/jovin-fluo.git
 cd jovin-fluo
-```
 
-2. **Setup Backend**
-```bash
+# Start all services with Docker Compose
+docker-compose up -d
+
+# Or set up manually
+# Backend
 cd backend
 python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
-```
 
-3. **Setup Frontend**
-```bash
+# Frontend
 cd frontend
 npm install
-```
-
-4. **Start with Docker**
-```bash
-docker-compose up -d
-```
-
-The application will be available at:
-- Frontend: http://localhost:3000
-- Backend API: http://localhost:8000
-- API Documentation: http://localhost:8000/docs
-
-## 🛠️ Tech Stack
-
-### Frontend
-- **Next.js 14** - React framework with App Router
-- **TypeScript** - Type-safe JavaScript
-- **Tailwind CSS** - Utility-first CSS framework
-- **Recharts** - Composable charting library
-- **React DnD** - Drag and drop functionality
-
-### Backend
-- **FastAPI** - Modern Python web framework
-- **SQLAlchemy 2.0** - Python SQL toolkit and ORM
-- **PostgreSQL** - Primary database
-- **JWT** - JSON Web Token authentication
-- **Pydantic** - Data validation using Python type annotations
-
-### Data Engine
-- **C++17** - High-performance computation
-- **gRPC** - High-performance RPC framework
-- **Protocol Buffers** - Language-neutral data serialization
-- **Fast-cpp-csv-parser** - Efficient CSV processing
-
-### Infrastructure
-- **Docker** - Containerization
-- **Docker Compose** - Multi-container orchestration
-- **Alembic** - Database migrations
-
-## 📁 Project Structure
-
-```
-jovin-fluo/
-├── 📁 backend/                 # Python FastAPI Application
-│   ├── app/
-│   │   ├── api/routes/        # API endpoints and controllers
-│   │   ├── core/              # Configuration and security
-│   │   ├── domain/            # Business entities and interfaces
-│   │   ├── application/       # Use cases and business logic
-│   │   └── infrastructure/    # External implementations
-│   └── requirements.txt
-├── 📁 engine/                 # C++ gRPC Calculation Engine
-│   ├── src/                   # C++ source code
-│   └── CMakeLists.txt
-├── 📁 frontend/               # Next.js React Application
-│   ├── app/                   # App router directory
-│   ├── components/            # Reusable React components
-│   ├── lib/                   # Utility functions
-│   └── public/                # Static assets
-└── 📁 proto/                  # gRPC protocol definitions
-```
-
-## 🎯 Core Features
-
-### Data Processing
-- **Automatic Data Profiling** - Column type detection and statistics
-- **Large Dataset Support** - Optimized for files up to 100GB
-- **Intelligent Suggestions** - Rule-based analysis recommendations
-- **Custom Formula Engine** - Excel/DAX-like calculation support
-
-### Visualization
-- **Drag & Drop Interface** - Intuitive chart building
-- **Real-time Preview** - Instant visualization updates
-- **Multiple Chart Types** - Bar, line, pie, scatter, and more
-- **Interactive Dashboards** - Responsive layout system
-
-### Collaboration & Security
-- **Role-Based Access Control** - Admin, Editor, Viewer roles
-- **Project Management** - Organize analyses by project
-- **User Management** - Secure authentication system
-- **Data Isolation** - User-specific data access
-
-## 🔧 Development
-
-### Running in Development Mode
-
-1. **Start Database**
-```bash
-docker-compose up postgres -d
-```
-
-2. **Start Backend**
-```bash
-cd backend
-source venv/bin/activate
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-```
-
-3. **Start Frontend**
-```bash
-cd frontend
 npm run dev
+
+# Access the application
+# Frontend: http://localhost:3000
+# Backend API: http://localhost:8000
+# API Docs: http://localhost:8000/docs
 ```
 
-### Building for Production
+### 📚 Documentation
 
-```bash
-# Build all services
-docker-compose -f docker-compose.prod.yml build
+- **[Vision & Roadmap](docs/VISION.md)** - Product vision and development roadmap
+- **[Architecture](docs/ARCHITECTURE.md)** - Technical architecture and design decisions
+- **[Tech Stack](docs/TECH_STACK.md)** - Detailed technology stack and rationale
+- **[Getting Started](docs/GETTING_STARTED.md)** - Setup guide and development environment
+- **[Development Guide](docs/DEVELOPMENT.md)** - Development phases and guidelines
+- **[API Documentation](docs/API.md)** - API reference and examples
+- **[Contributing](docs/CONTRIBUTING.md)** - Contribution guidelines and code of conduct
 
-# Deploy
-docker-compose -f docker-compose.prod.yml up -d
-```
+### 🎯 Current Status
 
-## 🧪 Testing
+**Phase 1 (MVP) - In Development**
+- ✅ Project structure and architecture design
+- ✅ Basic authentication and user management
+- 🚧 File upload and data profiling
+- 🚧 Formula editor and calculation engine
+- 🚧 Dashboard builder and visualizations
+- ⏳ Export functionality
 
-```bash
-# Backend tests
-cd backend
-pytest
+### 🤝 Contributing
 
-# Frontend tests  
-cd frontend
-npm test
-
-# End-to-end tests
-npm run test:e2e
-```
-
-## 📈 Performance
-
-- **Data Processing**: 10x faster than pure Python with C++ engine
-- **File Upload**: Supports files up to 100GB
-- **Concurrent Users**: Horizontal scaling ready
-- **Response Time**: < 100ms for most operations
-
-## 🤝 Contributing
-
-We love contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+We welcome contributions! Please see our [Contributing Guide](docs/CONTRIBUTING.md) for details.
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
@@ -221,47 +245,15 @@ We love contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for 
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📄 License
+### 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🏆 Roadmap
+### 🙏 Acknowledgments
 
-### Phase 1 
-- [ ] User authentication and project management
-- [ ] Basic file upload and data profiling
-- [ ] Simple data table preview
-
-### Phase 2 
-- [ ] C++ calculation engine integration
-- [ ] Formula editor and custom calculations
-- [ ] Basic visualization builder
-
-### Phase 3 
-- [ ] Advanced chart types and interactions
-- [ ] Dashboard creation and layout
-- [ ] Export functionality (PDF, CSV)
-
-### Phase 4 
-- [ ] Real-time collaboration
-- [ ] Advanced analytics and ML suggestions
-- [ ] Plugin system for extensions
-
-## 🐛 Bug Reports & Feature Requests
-
-Found a bug or have a feature request? Please [open an issue](https://github.com/your-username/jovin-fluo/issues) on GitHub.
-
-## 💬 Community
-
-- **Discord**: [Join our community](https://discord.gg/jovin-fluo)
-- **Twitter**: [@JovinFluo](https://twitter.com/JovinFluo)
-- **Email**: team@jovin-fluo.com
-
-## 🙏 Acknowledgments
-
-- FastAPI community for the excellent documentation
-- React and Next.js teams for the incredible frameworks
-- C++ standard library contributors
+- FastAPI community for excellent documentation
+- React and Next.js teams for incredible frameworks
+- Apache Arrow project for high-performance data formats
 - All our amazing contributors
 
 ---
@@ -270,6 +262,7 @@ Found a bug or have a feature request? Please [open an issue](https://github.com
 
 **Built with ❤️ for the data community**
 
-[![Star History Chart](https://api.star-history.com/svg?repos=your-username/jovin-fluo&type=Date)](https://star-history.com/#your-username/jovin-fluo&Date)
+[Report Bug](https://github.com/your-username/jovin-fluo/issues) • [Request Feature](https://github.com/your-username/jovin-fluo/issues) • [Discord](https://discord.gg/jovin-fluo) • [Twitter](https://twitter.com/jovinfluo)
 
 </div>
+
