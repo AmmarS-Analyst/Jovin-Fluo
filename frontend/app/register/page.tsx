@@ -23,14 +23,32 @@ export default function RegisterPage() {
     try {
       await authService.register(formData)
       // Auto-login after registration
-      await authService.login({
+      const loginResult = await authService.login({
         email: formData.email,
         password: formData.password,
       })
-      router.push('/dashboard')
+      if (loginResult && loginResult.access_token) {
+        // Small delay to ensure cookie is set
+        await new Promise(resolve => setTimeout(resolve, 100))
+        router.push('/dashboard')
+        router.refresh()
+      } else {
+        setError('Registration successful but login failed. Please try logging in.')
+        setLoading(false)
+      }
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Registration failed. Please try again.')
-    } finally {
+      console.error('Register error:', err)
+      let errorMessage = 'Registration failed. Please try again.'
+      
+      if (err.message?.includes('Cannot connect to server') || err.message?.includes('Network error')) {
+        errorMessage = err.message
+      } else if (err.response?.data?.detail) {
+        errorMessage = err.response.data.detail
+      } else if (err.message) {
+        errorMessage = err.message
+      }
+      
+      setError(errorMessage)
       setLoading(false)
     }
   }

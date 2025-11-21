@@ -39,7 +39,7 @@ class Settings(BaseSettings):
     
     # File Upload
     UPLOAD_DIR: str = "./uploads"
-    MAX_FILE_SIZE: int = 104857600  # 100MB
+    MAX_FILE_SIZE: int = 1073741824  # 1GB
     
     # Allowed file extensions
     ALLOWED_EXTENSIONS: List[str] = [".csv", ".xlsx", ".xls", ".xlsm", ".xlsb"]

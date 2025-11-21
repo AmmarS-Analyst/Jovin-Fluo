@@ -92,7 +92,8 @@ class VisualizationCreate(BaseModel):
     name: str
     type: str
     config: Dict[str, Any]
-    project_id: int
+    project_id: Optional[int] = None
+    dataset_id: Optional[int] = None
 
 
 class VisualizationResponse(BaseModel):
@@ -106,4 +107,35 @@ class VisualizationResponse(BaseModel):
     
     class Config:
         from_attributes = True
+
+
+# Calculated Column Schemas
+class CalculatedColumnCreate(BaseModel):
+    """Calculated column creation schema."""
+    name: str
+    formula: str
+    data_type: str
+    dataset_id: int
+
+
+class CalculatedColumnResponse(BaseModel):
+    """Calculated column response schema."""
+    id: int
+    name: str
+    formula: str
+    data_type: str
+    dataset_id: int
+    created_at: datetime
+    
+    class Config:
+        from_attributes = True
+
+
+# Export Schemas
+class ExportRequest(BaseModel):
+    """Export request schema."""
+    dataset_id: int
+    format: str
+    include_visualizations: bool = False
+    visualization_ids: Optional[List[int]] = None
 

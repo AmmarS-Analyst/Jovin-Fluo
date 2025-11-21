@@ -38,9 +38,31 @@ async def create_visualization(
     user_id: int = Depends(get_current_user_id)
 ):
     """Create a new visualization."""
+    from app.infrastructure.database.models import Dataset as DatasetModel
+    
+    # If dataset_id is provided, get project_id from dataset
+    project_id = viz_data.project_id
+    if viz_data.dataset_id:
+        dataset = db.query(DatasetModel).filter(
+            DatasetModel.id == viz_data.dataset_id,
+            DatasetModel.is_deleted == False  # Exclude soft-deleted datasets
+        ).first()
+        if not dataset:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Dataset not found"
+            )
+        project_id = dataset.project_id
+    
+    if not project_id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Either project_id or dataset_id must be provided"
+        )
+    
     # Verify project ownership
     project = db.query(ProjectModel).filter(
-        ProjectModel.id == viz_data.project_id,
+        ProjectModel.id == project_id,
         ProjectModel.owner_id == user_id
     ).first()
     
@@ -54,7 +76,7 @@ async def create_visualization(
         name=viz_data.name,
         type=viz_data.type,
         config=viz_data.config,
-        project_id=viz_data.project_id,
+        project_id=project_id,
     )
     db.add(db_viz)
     db.commit()

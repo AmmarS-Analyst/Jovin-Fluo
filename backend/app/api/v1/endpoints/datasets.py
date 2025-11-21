@@ -7,7 +7,7 @@ import pandas as pd
 from datetime import datetime
 from app.core.database import get_db
 from app.core.schemas import DatasetUploadResponse, DataProfileResponse, ColumnProfile
-from app.infrastructure.database.models import Dataset as DatasetModel, Project as ProjectModel
+from app.infrastructure.database.models import Dataset as DatasetModel, Project as ProjectModel, AnonymizedData as AnonymizedDataModel
 from app.core.security import decode_access_token
 from app.core.config import settings
 from fastapi import Header
@@ -69,6 +69,15 @@ async def upload_dataset(
             detail=f"File type not allowed. Allowed types: {', '.join(settings.ALLOWED_EXTENSIONS)}"
         )
     
+    # Validate file size
+    file_content = await file.read()
+    file_size = len(file_content)
+    if file_size > settings.MAX_FILE_SIZE:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"File size exceeds maximum allowed size of {settings.MAX_FILE_SIZE / (1024*1024*1024):.1f}GB"
+        )
+    
     # Ensure upload directory exists
     ensure_upload_dir()
     
@@ -77,11 +86,8 @@ async def upload_dataset(
     file_path = os.path.join(settings.UPLOAD_DIR, unique_filename)
     
     # Save file
-    file_size = 0
     with open(file_path, "wb") as f:
-        content = await file.read()
-        file_size = len(content)
-        f.write(content)
+        f.write(file_content)
     
     # Create dataset record
     db_dataset = DatasetModel(
@@ -90,10 +96,37 @@ async def upload_dataset(
         file_size=file_size,
         file_type=file_ext,
         project_id=project_id,
+        is_deleted=False,
     )
     db.add(db_dataset)
     db.commit()
     db.refresh(db_dataset)
+    
+    # Create anonymized_data entry for archival purposes (optional - don't fail if table doesn't exist)
+    try:
+        anonymized_entry = AnonymizedDataModel(
+            data_type='dataset',
+            original_id=db_dataset.id,
+            deleted_by=user_id,
+            project_id=project_id,
+            data_metadata={
+                'name': db_dataset.name,
+                'file_size': db_dataset.file_size,
+                'file_type': db_dataset.file_type,
+                'project_id': project_id,
+                'uploaded_at': db_dataset.created_at.isoformat() if db_dataset.created_at else None,
+                'action': 'uploaded',  # Track action type
+            },
+            is_deleted=False,  # Not deleted yet, just archived
+        )
+        db.add(anonymized_entry)
+        db.commit()
+    except Exception as e:
+        # Log error but don't fail the upload if anonymized_data table doesn't exist yet
+        # This allows uploads to work even before migration is run
+        import logging
+        logging.warning(f"Failed to create anonymized_data entry: {str(e)}")
+        db.rollback()
     
     return DatasetUploadResponse(
         id=db_dataset.id,
@@ -112,7 +145,10 @@ async def get_dataset_profile(
     user_id: int = Depends(get_current_user_id)
 ):
     """Get dataset profile and statistics."""
-    dataset = db.query(DatasetModel).filter(DatasetModel.id == dataset_id).first()
+    dataset = db.query(DatasetModel).filter(
+        DatasetModel.id == dataset_id,
+        DatasetModel.is_deleted == False  # Exclude soft-deleted datasets
+    ).first()
     
     if not dataset:
         raise HTTPException(
@@ -134,31 +170,56 @@ async def get_dataset_profile(
     
     # Read and profile the file
     try:
+        # For large files, read in chunks or limit rows for profiling
+        max_rows_for_profiling = 50000  # Profile first 50k rows for performance
+        
         if dataset.file_type in [".xlsx", ".xls", ".xlsm", ".xlsb"]:
-            df = pd.read_excel(dataset.file_path, nrows=10000)  # Limit for performance
+            df = pd.read_excel(dataset.file_path, nrows=max_rows_for_profiling)
         else:
-            df = pd.read_csv(dataset.file_path, nrows=10000)
+            df = pd.read_csv(dataset.file_path, nrows=max_rows_for_profiling)
+        
+        # Get actual row count (read full file for count only)
+        try:
+            if dataset.file_type in [".xlsx", ".xls", ".xlsm", ".xlsb"]:
+                full_df = pd.read_excel(dataset.file_path, usecols=[0])  # Read only first column for count
+            else:
+                full_df = pd.read_csv(dataset.file_path, usecols=[0])
+            actual_row_count = len(full_df)
+        except:
+            actual_row_count = len(df)
         
         # Get basic info
-        row_count = len(df)
+        row_count = actual_row_count
         columns = []
         
         # Profile each column
         for col in df.columns:
             col_data = df[col]
             null_count = col_data.isnull().sum()
-            null_percentage = (null_count / row_count) * 100 if row_count > 0 else 0
+            # Use actual row count for percentage calculation
+            null_percentage = (null_count / len(col_data)) * 100 if len(col_data) > 0 else 0
             
             # Detect type
             if pd.api.types.is_numeric_dtype(col_data):
                 col_type = "numeric"
-                stats = {
-                    "mean": float(col_data.mean()) if not col_data.empty else None,
-                    "median": float(col_data.median()) if not col_data.empty else None,
-                    "std": float(col_data.std()) if not col_data.empty else None,
-                    "min": float(col_data.min()) if not col_data.empty else None,
-                    "max": float(col_data.max()) if not col_data.empty else None,
-                }
+                # Get valid numeric values (non-null)
+                valid_data = col_data.dropna()
+                
+                if len(valid_data) > 0:
+                    try:
+                        stats = {
+                            "mean": float(valid_data.mean()) if not pd.isna(valid_data.mean()) else None,
+                            "median": float(valid_data.median()) if not pd.isna(valid_data.median()) else None,
+                            "std": float(valid_data.std()) if not pd.isna(valid_data.std()) else None,
+                            "min": float(valid_data.min()) if not pd.isna(valid_data.min()) else None,
+                            "max": float(valid_data.max()) if not pd.isna(valid_data.max()) else None,
+                        }
+                    except (ValueError, TypeError):
+                        # Handle edge cases where calculations fail
+                        stats = None
+                else:
+                    # All values are null/NaN
+                    stats = None
             elif pd.api.types.is_datetime64_any_dtype(col_data):
                 col_type = "datetime"
                 stats = None
@@ -224,7 +285,10 @@ async def list_datasets(
             detail="Project not found"
         )
     
-    datasets = db.query(DatasetModel).filter(DatasetModel.project_id == project_id).all()
+    datasets = db.query(DatasetModel).filter(
+        DatasetModel.project_id == project_id,
+        DatasetModel.is_deleted == False  # Exclude soft-deleted datasets
+    ).all()
     
     return [
         DatasetUploadResponse(
@@ -237,4 +301,123 @@ async def list_datasets(
         )
         for d in datasets
     ]
+
+
+@router.get("/{dataset_id}/data")
+async def get_dataset_data(
+    dataset_id: int,
+    limit: int = Query(100, description="Number of rows to return"),
+    db: Session = Depends(get_db),
+    user_id: int = Depends(get_current_user_id)
+):
+    """Get dataset data for calculations preview."""
+    dataset = db.query(DatasetModel).filter(
+        DatasetModel.id == dataset_id,
+        DatasetModel.is_deleted == False
+    ).first()
+    
+    if not dataset:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Dataset not found"
+        )
+    
+    # Verify project ownership
+    project = db.query(ProjectModel).filter(
+        ProjectModel.id == dataset.project_id,
+        ProjectModel.owner_id == user_id
+    ).first()
+    
+    if not project:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access denied"
+        )
+    
+    try:
+        # Read dataset
+        if dataset.file_type in [".xlsx", ".xls", ".xlsm", ".xlsb"]:
+            df = pd.read_excel(dataset.file_path, nrows=limit)
+        else:
+            df = pd.read_csv(dataset.file_path, nrows=limit)
+        
+        # Convert to JSON format
+        data = {
+            "columns": df.columns.tolist(),
+            "rows": df.values.tolist(),
+            "row_count": len(df)
+        }
+        
+        return data
+    
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error reading dataset: {str(e)}"
+        )
+
+
+@router.delete("/{dataset_id}", status_code=status.HTTP_200_OK)
+async def delete_dataset(
+    dataset_id: int,
+    db: Session = Depends(get_db),
+    user_id: int = Depends(get_current_user_id)
+):
+    """Soft delete a dataset (archives to anonymized_data, marks as deleted for user only)."""
+    from datetime import datetime
+    
+    dataset = db.query(DatasetModel).filter(
+        DatasetModel.id == dataset_id,
+        DatasetModel.is_deleted == False
+    ).first()
+    
+    if not dataset:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Dataset not found or already deleted"
+        )
+    
+    # Verify project ownership
+    project = db.query(ProjectModel).filter(
+        ProjectModel.id == dataset.project_id,
+        ProjectModel.owner_id == user_id
+    ).first()
+    
+    if not project:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access denied"
+        )
+    
+    # Archive to anonymized_data with full metadata
+    anonymized_entry = AnonymizedDataModel(
+        data_type='dataset',
+        original_id=dataset.id,
+        deleted_by=user_id,
+        project_id=dataset.project_id,
+        data_metadata={
+            'name': dataset.name,
+            'file_path': dataset.file_path,
+            'file_size': dataset.file_size,
+            'file_type': dataset.file_type,
+            'project_id': dataset.project_id,
+            'project_name': project.name,
+            'row_count': dataset.row_count,
+            'column_count': dataset.column_count,
+            'profile_data': dataset.profile_data,
+            'created_at': dataset.created_at.isoformat() if dataset.created_at else None,
+            'action': 'deleted',
+        },
+        is_deleted=True,
+        deleted_at=datetime.utcnow(),
+    )
+    db.add(anonymized_entry)
+    
+    # Soft delete the dataset (mark as deleted for this user)
+    dataset.is_deleted = True
+    dataset.deleted_at = datetime.utcnow()
+    dataset.deleted_by = user_id
+    db.commit()
+    
+    return {"message": "Dataset deleted successfully", "archived": True}
 

@@ -52,12 +52,17 @@ class Dataset(Base):
     row_count = Column(Integer, nullable=True)
     column_count = Column(Integer, nullable=True)
     profile_data = Column(JSON, nullable=True)  # Store profiling results
+    # Soft delete fields
+    is_deleted = Column(Boolean, default=False, nullable=False, index=True)
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
+    deleted_by = Column(Integer, ForeignKey("users.id"), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
     # Relationships
     project = relationship("Project", back_populates="datasets")
     calculated_columns = relationship("CalculatedColumn", back_populates="dataset", cascade="all, delete-orphan")
+    deleter = relationship("User", foreign_keys=[deleted_by])
 
 
 class CalculatedColumn(Base):
@@ -104,4 +109,35 @@ class Dashboard(Base):
     
     # Relationships
     project = relationship("Project", back_populates="dashboards")
+
+
+class AnonymizedData(Base):
+    """Anonymized data archive for datasets and reports.
+    
+    This table stores metadata about datasets and reports in JSON format
+    to keep the size small. Data is archived here when users delete their
+    datasets/reports, but it's not actually deleted - only marked as deleted
+    for that specific user. This allows for audit trails and data recovery.
+    """
+    __tablename__ = "anonymized_data"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    # Type of data: 'dataset', 'report', 'visualization'
+    data_type = Column(String(50), nullable=False, index=True)
+    # Reference to the original record ID
+    original_id = Column(Integer, nullable=False, index=True)
+    # User who deleted it
+    deleted_by = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    # Project ID for reference
+    project_id = Column(Integer, ForeignKey("projects.id"), nullable=True, index=True)
+    # Metadata stored as JSON (compact format) - renamed from 'metadata' to avoid SQLAlchemy conflict
+    data_metadata = Column(JSON, nullable=False)  # Stores all relevant information
+    # Soft delete status (always True here, but kept for consistency)
+    is_deleted = Column(Boolean, default=True, nullable=False)
+    deleted_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    
+    # Relationships
+    user = relationship("User", foreign_keys=[deleted_by])
+    project = relationship("Project")
 

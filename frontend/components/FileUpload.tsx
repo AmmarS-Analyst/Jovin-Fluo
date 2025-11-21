@@ -2,6 +2,8 @@
 
 import { useCallback, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Upload, File, CheckCircle, AlertCircle, X } from 'lucide-react'
 import api from '@/lib/api'
 
 interface FileUploadProps {
@@ -26,18 +28,23 @@ export default function FileUpload({ projectId, onUploaded }: FileUploadProps) {
     formData.append('file', file)
 
     try {
-      await api.post(`/datasets/upload?project_id=${projectId}`, formData, {
+      const response = await api.post(`/datasets/upload?project_id=${projectId}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       })
       setSuccess(true)
-      onUploaded()
-      setTimeout(() => setSuccess(false), 3000)
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'Upload failed')
-    } finally {
       setUploading(false)
+      // Wait a moment to show success message, then reload datasets
+      setTimeout(() => {
+        onUploaded()
+        setTimeout(() => setSuccess(false), 2000)
+      }, 500)
+    } catch (err: any) {
+      setUploading(false)
+      const errorMessage = err.response?.data?.detail || err.message || 'Upload failed. Please try again.'
+      setError(errorMessage)
+      console.error('Upload error:', err)
     }
   }, [projectId, onUploaded])
 
@@ -51,48 +58,99 @@ export default function FileUpload({ projectId, onUploaded }: FileUploadProps) {
       'application/vnd.ms-excel.sheet.binary.macroEnabled.12': ['.xlsb'],
     },
     maxFiles: 1,
+    maxSize: 1073741824, // 1GB
   })
 
   return (
-    <div className="bg-white rounded-lg shadow p-6">
-      <h2 className="text-xl font-semibold mb-4">Upload Dataset</h2>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="bg-white rounded-xl shadow-lg p-6"
+    >
+      <div className="flex items-center gap-3 mb-4">
+        <div className="p-2 bg-blue-100 rounded-lg">
+          <Upload className="w-5 h-5 text-blue-600" />
+        </div>
+        <div>
+          <h2 className="text-xl font-semibold text-gray-900">Upload Dataset</h2>
+          <p className="text-sm text-gray-500">Drag & drop or click to select</p>
+        </div>
+      </div>
       
       <div
         {...getRootProps()}
-        className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition ${
+        className={`relative border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all ${
           isDragActive
-            ? 'border-primary-600 bg-primary-50'
-            : 'border-gray-300 hover:border-primary-400'
-        }`}
+            ? 'border-primary-600 bg-primary-50 scale-105'
+            : 'border-gray-300 hover:border-primary-400 hover:bg-gray-50'
+        } ${uploading ? 'pointer-events-none opacity-50' : ''}`}
       >
         <input {...getInputProps()} />
         {uploading ? (
-          <div className="text-primary-600">Uploading...</div>
+          <div className="flex flex-col items-center justify-center">
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              className="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full mb-3"
+            />
+            <p className="text-primary-600 font-semibold">Uploading...</p>
+          </div>
         ) : (
           <>
-            <div className="text-4xl mb-4">📁</div>
-            <p className="text-gray-600 mb-2">
-              {isDragActive ? 'Drop file here' : 'Drag & drop a file here, or click to select'}
+            <motion.div
+              whileHover={{ scale: 1.1 }}
+              className="inline-block mb-4"
+            >
+              <File className="w-12 h-12 text-gray-400 mx-auto" />
+            </motion.div>
+            <p className="text-gray-700 font-medium mb-2">
+              {isDragActive ? 'Drop file here' : 'Drag & drop a file here'}
             </p>
-            <p className="text-sm text-gray-500">
-              Supports CSV, XLS, XLSX, XLSM, XLSB
+            <p className="text-sm text-gray-500 mb-2">or</p>
+            <p className="text-sm text-primary-600 font-semibold hover:underline">
+              Browse files
+            </p>
+            <p className="text-xs text-gray-500 mt-4">
+              Supports CSV, XLS, XLSX, XLSM, XLSB (Max 1GB)
             </p>
           </>
         )}
       </div>
 
-      {error && (
-        <div className="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded text-sm">
-          {error}
-        </div>
-      )}
+      <AnimatePresence>
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3"
+          >
+            <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <p className="text-sm font-medium text-red-800">Upload Error</p>
+              <p className="text-sm text-red-600">{error}</p>
+            </div>
+            <button
+              onClick={() => setError('')}
+              className="text-red-600 hover:text-red-800"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </motion.div>
+        )}
 
-      {success && (
-        <div className="mt-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded text-sm">
-          File uploaded successfully!
-        </div>
-      )}
-    </div>
+        {success && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center gap-3"
+          >
+            <CheckCircle className="w-5 h-5 text-green-600" />
+            <p className="text-sm font-medium text-green-800">File uploaded successfully!</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   )
 }
-

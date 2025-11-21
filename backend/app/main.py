@@ -2,7 +2,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
-from app.api.v1.endpoints import auth, projects, datasets, visualizations, exports
+from app.api.v1.endpoints import auth, projects, datasets, visualizations, exports, calculated_columns
 
 app = FastAPI(
     title="Jovin Fluo API",
@@ -27,6 +27,7 @@ app.include_router(projects.router, prefix="/api/v1/projects", tags=["Projects"]
 app.include_router(datasets.router, prefix="/api/v1/datasets", tags=["Datasets"])
 app.include_router(visualizations.router, prefix="/api/v1/visualizations", tags=["Visualizations"])
 app.include_router(exports.router, prefix="/api/v1/exports", tags=["Exports"])
+app.include_router(calculated_columns.router, prefix="/api/v1/calculated-columns", tags=["Calculated Columns"])
 
 
 @app.get("/")
