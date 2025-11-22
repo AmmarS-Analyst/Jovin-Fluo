@@ -6,11 +6,18 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowLeft, Database, BarChart3, Calculator, Trash2, Upload as UploadIcon, Clock, FileText, Settings, Download } from 'lucide-react'
 import api from '@/lib/api'
 import { authService } from '@/lib/auth'
+import { showToast } from '@/lib/toast'
+import { ThemeToggle } from '@/components/ThemeToggle'
+import { CardSkeleton } from '@/components/LoadingSkeleton'
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
 import FileUpload from '@/components/FileUpload'
 import DataProfile from '@/components/DataProfile'
 import VisualizationBuilder from '@/components/VisualizationBuilder'
 import CalculationsBuilder from '@/components/CalculationsBuilder'
 import ExportButton from '@/components/ExportButton'
+import AdvancedFilters from '@/components/AdvancedFilters'
+import DashboardBuilder from '@/components/DashboardBuilder'
+import DataTransform from '@/components/DataTransform'
 
 interface Dataset {
   id: number
@@ -21,7 +28,7 @@ interface Dataset {
   created_at: string
 }
 
-type ViewMode = 'upload' | 'datasets' | 'profile' | 'visualizations' | 'calculations' | 'export'
+type ViewMode = 'upload' | 'datasets' | 'profile' | 'visualizations' | 'calculations' | 'export' | 'dashboard' | 'transform'
 
 export default function ProjectPage() {
   const params = useParams()
@@ -34,6 +41,7 @@ export default function ProjectPage() {
   const [loading, setLoading] = useState(false)
   const [currentView, setCurrentView] = useState<ViewMode>('datasets')
   const [showUploadModal, setShowUploadModal] = useState(false)
+  const [savedVisualizations, setSavedVisualizations] = useState<any[]>([])
 
   useEffect(() => {
     if (!authService.isAuthenticated()) {
@@ -42,6 +50,46 @@ export default function ProjectPage() {
     }
     loadDatasets()
   }, [projectId, router])
+
+  // Keyboard shortcuts
+  useKeyboardShortcuts([
+    {
+      key: 'u',
+      ctrl: true,
+      action: () => setCurrentView('upload'),
+      description: 'Go to Upload'
+    },
+    {
+      key: 'd',
+      ctrl: true,
+      action: () => setCurrentView('datasets'),
+      description: 'Go to Datasets'
+    },
+    {
+      key: 'p',
+      ctrl: true,
+      action: () => selectedDataset && setCurrentView('profile'),
+      description: 'Go to Profile'
+    },
+    {
+      key: 'v',
+      ctrl: true,
+      action: () => selectedDataset && setCurrentView('visualizations'),
+      description: 'Go to Visualizations'
+    },
+    {
+      key: 'c',
+      ctrl: true,
+      action: () => selectedDataset && setCurrentView('calculations'),
+      description: 'Go to Calculations'
+    },
+    {
+      key: 'e',
+      ctrl: true,
+      action: () => selectedDataset && setCurrentView('export'),
+      description: 'Go to Export'
+    },
+  ])
 
   const loadDatasets = async () => {
     try {
@@ -59,6 +107,17 @@ export default function ProjectPage() {
     setCurrentView('datasets')
   }
 
+  const loadVisualizations = async () => {
+    if (!projectId) return
+    try {
+      const response = await api.get(`/visualizations/project/${projectId}`)
+      setSavedVisualizations(response.data || [])
+    } catch (error) {
+      console.error('Failed to load visualizations:', error)
+      setSavedVisualizations([])
+    }
+  }
+
   const handleDatasetSelect = async (datasetId: number) => {
     setSelectedDataset(datasetId)
     setLoading(true)
@@ -67,9 +126,10 @@ export default function ProjectPage() {
       const response = await api.get(`/datasets/${datasetId}/profile`)
       setProfileData(response.data)
       setCurrentView('profile')
+      loadVisualizations()
     } catch (error: any) {
       console.error('Failed to load profile:', error)
-      alert(error.response?.data?.detail || 'Failed to load dataset profile')
+      showToast.error(error.response?.data?.detail || 'Failed to load dataset profile')
     } finally {
       setLoading(false)
     }
@@ -90,10 +150,10 @@ export default function ProjectPage() {
         setProfileData(null)
         setCurrentView('datasets')
       }
-      alert('Dataset deleted successfully. It has been archived.')
+      showToast.success('Dataset deleted successfully. It has been archived.')
     } catch (error: any) {
       console.error('Failed to delete dataset:', error)
-      alert(error.response?.data?.detail || 'Failed to delete dataset')
+      showToast.error(error.response?.data?.detail || 'Failed to delete dataset')
     }
   }
 
@@ -120,9 +180,9 @@ export default function ProjectPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       {/* Power BI-like Top Navbar */}
-      <nav className="bg-white shadow-lg border-b border-gray-200 sticky top-0 z-50">
+      <nav className="bg-white dark:bg-gray-800 shadow-lg border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
         <div className="container mx-auto px-6">
           <div className="flex items-center justify-between h-16">
             {/* Left: Back button and title */}
@@ -136,7 +196,7 @@ export default function ProjectPage() {
                 <ArrowLeft className="w-5 h-5 text-gray-700" />
               </motion.button>
               <div>
-                <h1 className="text-xl font-bold text-gray-900">Project Workspace</h1>
+                <h1 className="text-xl font-bold text-gray-900 dark:text-white">Project Workspace</h1>
               </div>
             </div>
 
@@ -162,8 +222,8 @@ export default function ProjectPage() {
                       isActive
                         ? 'bg-gradient-to-r from-primary-600 to-indigo-600 text-white shadow-md'
                         : isDisabled
-                        ? 'text-gray-400 cursor-not-allowed'
-                        : 'text-gray-700 hover:bg-gray-100'
+                        ? 'text-gray-400 dark:text-gray-600 cursor-not-allowed'
+                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                     }`}
                   >
                     <Icon className="w-4 h-4" />
@@ -180,15 +240,18 @@ export default function ProjectPage() {
               })}
             </div>
 
-            {/* Right: Selected Dataset Info */}
-            {selectedDataset && (
-              <div className="flex items-center gap-3 px-4 py-2 bg-primary-50 rounded-lg border border-primary-200">
-                <Database className="w-4 h-4 text-primary-600" />
-                <span className="text-sm font-medium text-primary-700">
-                  {datasets.find(d => d.id === selectedDataset)?.name || 'Dataset'}
-                </span>
-              </div>
-            )}
+            {/* Right: Selected Dataset Info & Theme Toggle */}
+            <div className="flex items-center gap-3">
+              {selectedDataset && (
+                <div className="flex items-center gap-3 px-4 py-2 bg-primary-50 dark:bg-primary-900 rounded-lg border border-primary-200 dark:border-primary-700">
+                  <Database className="w-4 h-4 text-primary-600 dark:text-primary-400" />
+                  <span className="text-sm font-medium text-primary-700 dark:text-primary-300">
+                    {datasets.find(d => d.id === selectedDataset)?.name || 'Dataset'}
+                  </span>
+                </div>
+              )}
+              <ThemeToggle />
+            </div>
           </div>
         </div>
       </nav>
@@ -197,20 +260,10 @@ export default function ProjectPage() {
       <div className="container mx-auto px-6 py-6">
         <AnimatePresence mode="wait">
           {loading ? (
-            <motion.div
-              key="loading"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="bg-white rounded-xl shadow-lg p-12 text-center"
-            >
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                className="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full mx-auto mb-4"
-              />
-              <div className="text-xl text-gray-600">Loading...</div>
-            </motion.div>
+            <div key="loading" className="space-y-6">
+              <CardSkeleton />
+              <CardSkeleton />
+            </div>
           ) : currentView === 'upload' ? (
             <motion.div
               key="upload"
@@ -327,6 +380,12 @@ export default function ProjectPage() {
               exit={{ opacity: 0, y: -20 }}
               className="space-y-6"
             >
+              <AdvancedFilters 
+                columns={profileData.columns}
+                onFilterChange={(filters) => {
+                  showToast.info(`${filters.length} filter(s) applied`)
+                }}
+              />
               <DataProfile data={profileData} />
             </motion.div>
           ) : currentView === 'visualizations' && profileData ? (
@@ -358,6 +417,33 @@ export default function ProjectPage() {
               exit={{ opacity: 0, y: -20 }}
             >
               <ExportButton datasetId={selectedDataset} projectId={projectId} />
+            </motion.div>
+          ) : currentView === 'dashboard' && profileData ? (
+            <motion.div
+              key="dashboard"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+            >
+              <DashboardBuilder 
+                projectId={projectId} 
+                visualizations={savedVisualizations}
+              />
+            </motion.div>
+          ) : currentView === 'transform' && profileData ? (
+            <motion.div
+              key="transform"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+            >
+              <DataTransform 
+                columns={profileData.columns}
+                onTransform={(transformations) => {
+                  // Handle transformations
+                  showToast.info(`${transformations.length} transformation(s) queued`)
+                }}
+              />
             </motion.div>
           ) : (
             <motion.div

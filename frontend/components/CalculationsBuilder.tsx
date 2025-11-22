@@ -1,9 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Calculator, Plus, Trash2, Sparkles, X, GripVertical, Eye, EyeOff } from 'lucide-react'
 import api from '@/lib/api'
+import { showToast } from '@/lib/toast'
+import DataTable from './DataTable'
+import { TableSkeleton } from './LoadingSkeleton'
+import FormulaEditor from './FormulaEditor'
 
 interface CalculatedColumn {
   id: number
@@ -113,8 +117,44 @@ export default function CalculationsBuilder({ datasetId, availableColumns }: Cal
     }
   }
 
+  const validateFormula = (formula: string): { valid: boolean; error?: string } => {
+    if (!formula.trim()) {
+      return { valid: false, error: 'Formula cannot be empty' }
+    }
+    
+    // Check for basic syntax errors
+    const openParens = (formula.match(/\(/g) || []).length
+    const closeParens = (formula.match(/\)/g) || []).length
+    if (openParens !== closeParens) {
+      return { valid: false, error: 'Mismatched parentheses' }
+    }
+    
+    // Check for valid column names
+    const columnNames = availableColumns.map(c => c.name)
+    const formulaWords = formula.match(/\b\w+\b/g) || []
+    const invalidColumns = formulaWords.filter(
+      word => !columnNames.includes(word) && 
+      !['SUM', 'AVG', 'COUNT', 'MIN', 'MAX', 'IF', 'YEAR', 'MONTH', 'QUARTER', 'FORMAT'].includes(word.toUpperCase()) &&
+      !/^\d+$/.test(word)
+    )
+    
+    if (invalidColumns.length > 0) {
+      return { valid: false, error: `Unknown column or function: ${invalidColumns.join(', ')}` }
+    }
+    
+    return { valid: true }
+  }
+
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Validate formula
+    const validation = validateFormula(formData.formula)
+    if (!validation.valid) {
+      showToast.error(validation.error || 'Invalid formula')
+      return
+    }
+    
     setLoading(true)
     try {
       await api.post('/calculated-columns', {
@@ -125,21 +165,24 @@ export default function CalculationsBuilder({ datasetId, availableColumns }: Cal
       setShowModal(false)
       loadCalculations()
       loadDatasetData() // Reload data to show new calculated column
+      showToast.success('Calculation created successfully!')
     } catch (error: any) {
-      alert(error.response?.data?.detail || 'Failed to create calculation')
+      showToast.error(error.response?.data?.detail || 'Failed to create calculation')
     } finally {
       setLoading(false)
     }
   }
 
   const handleDelete = async (id: number) => {
-    if (!confirm('Are you sure you want to delete this calculation?')) return
+    // Using a simple confirm for now - could be replaced with a custom modal
+    if (!window.confirm('Are you sure you want to delete this calculation?')) return
     try {
       await api.delete(`/calculated-columns/${id}`)
       loadCalculations()
       loadDatasetData() // Reload data
+      showToast.success('Calculation deleted successfully!')
     } catch (error: any) {
-      alert(error.response?.data?.detail || 'Failed to delete calculation')
+      showToast.error(error.response?.data?.detail || 'Failed to delete calculation')
     }
   }
 
@@ -166,7 +209,7 @@ export default function CalculationsBuilder({ datasetId, availableColumns }: Cal
       loadCalculations()
       loadDatasetData() // Reload data to show new calculated column
     } catch (error: any) {
-      alert(error.response?.data?.detail || 'Failed to create calculation from template')
+      showToast.error(error.response?.data?.detail || 'Failed to create calculation from template')
     } finally {
       setLoading(false)
     }
@@ -192,22 +235,40 @@ export default function CalculationsBuilder({ datasetId, availableColumns }: Cal
     return [...baseColumns, ...calcColumns]
   }
 
-  // Simple formula evaluation (placeholder - in real implementation, this would use a proper formula engine)
+  // Memoized formula evaluation with caching (placeholder - in real implementation, this would use a proper formula engine)
+  const formulaCache = useMemo(() => new Map<string, any>(), [])
+  
   const evaluateFormula = (formula: string, row: any[], columns: string[]): any => {
+    // Create cache key
+    const cacheKey = `${formula}-${row.join(',')}`
+    if (formulaCache.has(cacheKey)) {
+      return formulaCache.get(cacheKey)
+    }
+    
     // This is a placeholder - in production, you'd use a proper formula parser
-    // For now, return a placeholder value
     try {
       // Basic evaluation for simple formulas (this is simplified)
       let result = formula
       columns.forEach((col, idx) => {
         const value = row[idx]
-        result = result.replace(new RegExp(`\\b${col}\\b`, 'g'), value || 0)
+        result = result.replace(new RegExp(`\\b${col}\\b`, 'g'), String(value || 0))
       })
       // Try to evaluate as JavaScript (not safe for production, but works for demo)
       // In production, use a proper formula engine
-      return eval(result) || 'N/A'
+      const evaluated = eval(result) || 'N/A'
+      formulaCache.set(cacheKey, evaluated)
+      // Limit cache size to prevent memory issues
+      if (formulaCache.size > 1000) {
+        const firstKey = formulaCache.keys().next().value
+        if (firstKey) {
+          formulaCache.delete(firstKey)
+        }
+      }
+      return evaluated
     } catch {
-      return 'N/A'
+      const error = 'N/A'
+      formulaCache.set(cacheKey, error)
+      return error
     }
   }
 
@@ -340,73 +401,39 @@ export default function CalculationsBuilder({ datasetId, availableColumns }: Cal
           </div>
 
           {loadingData ? (
-            <div className="text-center py-12">
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                className="w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full mx-auto mb-4"
-              />
-              <p className="text-gray-600">Loading data...</p>
-            </div>
+            <TableSkeleton rows={10} cols={getAllColumns().length || 5} />
           ) : showDataPreview ? (
-            <div className="overflow-x-auto border-2 border-gray-200 rounded-lg max-h-[600px] overflow-y-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gradient-to-r from-gray-50 to-gray-100 sticky top-0 z-10">
-                  <tr>
-                    {getAllColumns().map((col, idx) => {
-                      const isCalculated = idx >= datasetData.columns.length
-                      return (
-                        <th
-                          key={idx}
-                          className={`px-4 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider border-r border-gray-200 last:border-r-0 ${
-                            isCalculated ? 'bg-purple-100' : ''
-                          }`}
-                        >
-                          <div className="flex items-center gap-2">
-                            {col}
-                            {isCalculated && (
-                              <span className="px-1.5 py-0.5 bg-purple-200 text-purple-700 rounded text-xs">
-                                Calc
-                              </span>
-                            )}
-                          </div>
-                        </th>
-                      )
-                    })}
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {datasetData.rows.map((row, rowIdx) => (
-                    <motion.tr
-                      key={rowIdx}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: rowIdx * 0.01 }}
-                      className="hover:bg-blue-50 transition"
-                    >
-                      {row.map((cell, cellIdx) => (
-                        <td
-                          key={cellIdx}
-                          className="px-4 py-3 text-sm text-gray-700 border-r border-gray-100 last:border-r-0"
-                        >
-                          {cell !== null && cell !== undefined ? String(cell) : <span className="text-gray-400 italic">null</span>}
-                        </td>
-                      ))}
-                      {/* Calculated columns */}
-                      {calculations
-                        .filter(c => selectedCalculations.has(c.id))
-                        .map((calc) => (
-                          <td
-                            key={calc.id}
-                            className="px-4 py-3 text-sm text-purple-700 font-semibold border-r border-gray-100 last:border-r-0 bg-purple-50"
-                          >
-                            {evaluateFormula(calc.formula, row, datasetData.columns)}
-                          </td>
-                        ))}
-                    </motion.tr>
-                  ))}
-                </tbody>
-              </table>
+            <div>
+              {/* Prepare data with calculated columns */}
+              {(() => {
+                const allCols = getAllColumns()
+                const calcCols = calculations.filter(c => selectedCalculations.has(c.id))
+                const tableData = datasetData.rows.map((row: any[]) => {
+                  const baseRow = [...row]
+                  calcCols.forEach(calc => {
+                    baseRow.push(evaluateFormula(calc.formula, row, datasetData.columns))
+                  })
+                  return baseRow
+                })
+                const tableColumns = [
+                  ...datasetData.columns.map((col: string) => ({ name: col, label: col, sortable: true })),
+                  ...calcCols.map(calc => ({ 
+                    name: calc.name, 
+                    label: `${calc.name} (Calc)`, 
+                    sortable: false 
+                  }))
+                ]
+                return (
+                  <DataTable
+                    columns={tableColumns}
+                    data={tableData}
+                    searchable={true}
+                    sortable={true}
+                    paginated={true}
+                    pageSize={20}
+                  />
+                )
+              })()}
             </div>
           ) : (
             <div className="text-center py-12 border-2 border-dashed border-gray-300 rounded-lg">
@@ -526,18 +553,16 @@ export default function CalculationsBuilder({ datasetId, availableColumns }: Cal
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Formula (DAX-like)
                   </label>
-                  <textarea
-                    required
+                  <FormulaEditor
                     value={formData.formula}
-                    onChange={(e) => setFormData({ ...formData, formula: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent font-mono text-sm"
-                    rows={4}
-                    placeholder="e.g., Sales * Quantity"
+                    onChange={(val) => setFormData({ ...formData, formula: val })}
+                    availableColumns={availableColumns}
+                    height="200px"
                   />
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
                     Available columns: {availableColumns.map(c => c.name).join(', ')}
                   </p>
                 </div>

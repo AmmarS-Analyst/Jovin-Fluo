@@ -7,6 +7,7 @@ import { motion } from 'framer-motion'
 import { FolderPlus, LogOut, BarChart3, Database, TrendingUp, Search, Filter, Clock } from 'lucide-react'
 import api from '@/lib/api'
 import { authService } from '@/lib/auth'
+import { CardSkeleton } from '@/components/LoadingSkeleton'
 
 interface Project {
   id: number
@@ -71,12 +72,14 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-indigo-50">
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-          className="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full"
-        />
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+        <div className="container mx-auto px-6 py-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <CardSkeleton key={i} />
+            ))}
+          </div>
+        </div>
       </div>
     )
   }
