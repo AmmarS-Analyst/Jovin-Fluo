@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowLeft, Database, BarChart3, Calculator, Trash2, Upload as UploadIcon, Clock, FileText, Settings, Download } from 'lucide-react'
+import { ArrowLeft, Database, BarChart3, Calculator, Trash2, Upload as UploadIcon, Clock, FileText, Settings, Download, LayoutGrid } from 'lucide-react'
 import api from '@/lib/api'
 import { authService } from '@/lib/auth'
 import { showToast } from '@/lib/toast'
@@ -49,6 +49,7 @@ export default function ProjectPage() {
       return
     }
     loadDatasets()
+    loadVisualizations()
   }, [projectId, router])
 
   // Keyboard shortcuts
@@ -170,12 +171,13 @@ export default function ProjectPage() {
     { id: 'datasets', label: 'Datasets', icon: Database, requiresDataset: false },
     { id: 'profile', label: 'Data Profile', icon: FileText, requiresDataset: true },
     { id: 'visualizations', label: 'Visualizations', icon: BarChart3, requiresDataset: true },
+    { id: 'dashboard', label: 'Dashboard', icon: LayoutGrid, requiresDataset: false },
     { id: 'calculations', label: 'Calculations', icon: Calculator, requiresDataset: true },
     { id: 'export', label: 'Export', icon: Download, requiresDataset: true },
   ]
 
   const canAccessView = (view: ViewMode) => {
-    if (view === 'upload' || view === 'datasets') return true
+    if (view === 'upload' || view === 'datasets' || view === 'dashboard') return true
     return selectedDataset !== null && profileData !== null
   }
 
@@ -418,12 +420,13 @@ export default function ProjectPage() {
             >
               <ExportButton datasetId={selectedDataset} projectId={projectId} />
             </motion.div>
-          ) : currentView === 'dashboard' && profileData ? (
+          ) : currentView === 'dashboard' ? (
             <motion.div
               key="dashboard"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
+              className="h-[calc(100vh-200px)]"
             >
               <DashboardBuilder 
                 projectId={projectId} 

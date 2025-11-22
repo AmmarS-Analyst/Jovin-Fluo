@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { FolderPlus, LogOut, BarChart3, Database, TrendingUp, Search, Filter, Clock } from 'lucide-react'
+import { FolderPlus, LogOut, BarChart3, Database, TrendingUp, Search, Filter, Clock, Activity, Zap, Users, FileText, LayoutGrid, ArrowRight } from 'lucide-react'
 import api from '@/lib/api'
 import { authService } from '@/lib/auth'
 import { CardSkeleton } from '@/components/LoadingSkeleton'
@@ -25,6 +25,12 @@ export default function DashboardPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [projectName, setProjectName] = useState('')
   const [projectDesc, setProjectDesc] = useState('')
+  const [stats, setStats] = useState({
+    totalProjects: 0,
+    totalDatasets: 0,
+    totalVisualizations: 0,
+    recentActivity: [] as any[]
+  })
 
   useEffect(() => {
     if (!authService.isAuthenticated()) {
@@ -38,6 +44,40 @@ export default function DashboardPage() {
     try {
       const response = await api.get('/projects')
       setProjects(response.data)
+      
+      // Load stats
+      const projectsData = response.data || []
+      let totalDatasets = 0
+      let totalVisualizations = 0
+      
+      // Get datasets and visualizations count for each project
+      for (const project of projectsData) {
+        try {
+          const datasetsRes = await api.get(`/datasets/project/${project.id}`)
+          totalDatasets += (datasetsRes.data || []).length
+          
+          const vizRes = await api.get(`/visualizations/project/${project.id}`)
+          totalVisualizations += (vizRes.data || []).length
+        } catch (err) {
+          // Ignore errors for individual projects
+        }
+      }
+      
+      const sortedProjects = [...projectsData].sort((a: Project, b: Project) => 
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      )
+      
+      setStats({
+        totalProjects: projectsData.length,
+        totalDatasets,
+        totalVisualizations,
+        recentActivity: sortedProjects.slice(0, 5).map((p: Project) => ({
+          type: 'project',
+          name: p.name,
+          date: p.created_at,
+          id: p.id
+        }))
+      })
     } catch (error) {
       console.error('Failed to load projects:', error)
     } finally {
@@ -85,9 +125,9 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       {/* Enhanced Navbar */}
-      <nav className="bg-white/90 backdrop-blur-lg shadow-xl border-b border-gray-200/50 sticky top-0 z-50">
+      <nav className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg shadow-xl border-b border-gray-200/50 dark:border-gray-700/50 sticky top-0 z-50">
         <div className="container mx-auto px-6 py-5">
           <div className="flex items-center justify-between">
             <motion.div 
@@ -102,7 +142,7 @@ export default function DashboardPage() {
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-primary-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
                   Jovin Fluo
                 </h1>
-                <p className="text-xs text-gray-600 font-medium">Data Analytics Platform</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400 font-medium">Data Analytics Platform</p>
               </div>
             </motion.div>
             <motion.div 
@@ -114,7 +154,7 @@ export default function DashboardPage() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={handleLogout}
-                className="px-5 py-2.5 text-gray-700 hover:bg-gray-100 rounded-xl transition-all flex items-center gap-2 font-medium shadow-sm hover:shadow"
+                className="px-5 py-2.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-all flex items-center gap-2 font-medium shadow-sm hover:shadow"
               >
                 <LogOut className="w-4 h-4" />
                 Logout
@@ -125,6 +165,73 @@ export default function DashboardPage() {
       </nav>
 
       <div className="container mx-auto px-6 py-8">
+        {/* Stats Cards */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8"
+        >
+          <motion.div
+            whileHover={{ y: -4, scale: 1.02 }}
+            className="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-primary-600"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600 mb-1">Total Projects</p>
+                <p className="text-3xl font-bold text-gray-900">{stats.totalProjects}</p>
+              </div>
+              <div className="p-3 bg-primary-100 rounded-xl">
+                <Database className="w-6 h-6 text-primary-600" />
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            whileHover={{ y: -4, scale: 1.02 }}
+            className="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-indigo-600"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600 mb-1">Datasets</p>
+                <p className="text-3xl font-bold text-gray-900">{stats.totalDatasets}</p>
+              </div>
+              <div className="p-3 bg-indigo-100 rounded-xl">
+                <FileText className="w-6 h-6 text-indigo-600" />
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            whileHover={{ y: -4, scale: 1.02 }}
+            className="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-purple-600"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600 mb-1">Visualizations</p>
+                <p className="text-3xl font-bold text-gray-900">{stats.totalVisualizations}</p>
+              </div>
+              <div className="p-3 bg-purple-100 rounded-xl">
+                <BarChart3 className="w-6 h-6 text-purple-600" />
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            whileHover={{ y: -4, scale: 1.02 }}
+            className="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-green-600"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600 mb-1">Activity</p>
+                <p className="text-3xl font-bold text-gray-900">{stats.recentActivity.length}</p>
+              </div>
+              <div className="p-3 bg-green-100 rounded-xl">
+                <Activity className="w-6 h-6 text-green-600" />
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
+
         {/* Header Section */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -136,13 +243,7 @@ export default function DashboardPage() {
               <h2 className="text-5xl font-bold bg-gradient-to-r from-gray-900 via-primary-600 to-indigo-600 bg-clip-text text-transparent mb-3">
                 My Projects
               </h2>
-              <p className="text-lg text-gray-600">Manage your analytics projects and datasets</p>
-              <div className="mt-4 flex items-center gap-4 text-sm text-gray-500">
-                <span className="flex items-center gap-2">
-                  <Database className="w-4 h-4" />
-                  {projects.length} {projects.length === 1 ? 'Project' : 'Projects'}
-                </span>
-              </div>
+              <p className="text-lg text-gray-600 dark:text-gray-400">Manage your analytics projects and datasets</p>
             </div>
             <motion.button
               whileHover={{ scale: 1.05, y: -2 }}
@@ -168,23 +269,117 @@ export default function DashboardPage() {
               placeholder="Search projects by name or description..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white shadow-lg hover:shadow-xl transition-all text-lg"
+              className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-lg hover:shadow-xl transition-all text-lg"
             />
           </motion.div>
         </motion.div>
+
+        {/* Recent Activity & Quick Actions */}
+        {stats.recentActivity.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8"
+          >
+            <div className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                  <Activity className="w-5 h-5 text-primary-600" />
+                  Recent Activity
+                </h3>
+                <button className="text-sm text-primary-600 hover:text-primary-700 font-medium">
+                  View All
+                </button>
+              </div>
+              <div className="space-y-3">
+                {stats.recentActivity.map((activity, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.3 + index * 0.1 }}
+                    className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition cursor-pointer"
+                    onClick={() => router.push(`/project/${activity.id}`)}
+                  >
+                    <div className="p-2 bg-primary-100 dark:bg-primary-900 rounded-lg">
+                      <Database className="w-4 h-4 text-primary-600 dark:text-primary-400" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-gray-900 dark:text-white truncate">{activity.name}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        {new Date(activity.date).toLocaleDateString('en-US', { 
+                          month: 'short', 
+                          day: 'numeric', 
+                          year: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </p>
+                    </div>
+                    <ArrowRight className="w-4 h-4 text-gray-400" />
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                <Zap className="w-5 h-5 text-primary-600" />
+                Quick Actions
+              </h3>
+              <div className="space-y-3">
+                <motion.button
+                  whileHover={{ scale: 1.02, x: 4 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setShowCreateModal(true)}
+                  className="w-full p-4 bg-gradient-to-r from-primary-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-primary-700 hover:to-indigo-700 transition flex items-center justify-between shadow-lg"
+                >
+                  <span className="flex items-center gap-2">
+                    <FolderPlus className="w-5 h-5" />
+                    Create Project
+                  </span>
+                  <ArrowRight className="w-4 h-4" />
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.02, x: 4 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="w-full p-4 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-200 dark:hover:bg-gray-600 transition flex items-center justify-between"
+                >
+                  <span className="flex items-center gap-2">
+                    <LayoutGrid className="w-5 h-5" />
+                    View Dashboards
+                  </span>
+                  <ArrowRight className="w-4 h-4" />
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.02, x: 4 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="w-full p-4 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-200 dark:hover:bg-gray-600 transition flex items-center justify-between"
+                >
+                  <span className="flex items-center gap-2">
+                    <BarChart3 className="w-5 h-5" />
+                    Analytics
+                  </span>
+                  <ArrowRight className="w-4 h-4" />
+                </motion.button>
+              </div>
+            </div>
+          </motion.div>
+        )}
 
         {/* Projects Grid */}
         {filteredProjects.length === 0 ? (
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="text-center py-20 bg-white rounded-2xl shadow-lg border-2 border-dashed border-gray-300"
+            className="text-center py-20 bg-white dark:bg-gray-800 rounded-2xl shadow-lg border-2 border-dashed border-gray-300 dark:border-gray-700"
           >
             <Database className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
               {searchQuery ? 'No projects found' : 'No projects yet'}
             </h3>
-            <p className="text-gray-600 mb-6">
+            <p className="text-gray-600 dark:text-gray-400 mb-6">
               {searchQuery ? 'Try a different search term' : 'Create your first project to get started!'}
             </p>
             {!searchQuery && (
@@ -220,16 +415,16 @@ export default function DashboardPage() {
                         </div>
                         <TrendingUp className="w-6 h-6 text-gray-300 group-hover:text-primary-600 transition transform group-hover:rotate-12" />
                       </div>
-                      <h3 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-primary-600 transition">
+                      <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition">
                         {project.name}
                       </h3>
                       {project.description && (
-                        <p className="text-gray-600 text-sm mb-6 flex-1 line-clamp-3 leading-relaxed">
+                        <p className="text-gray-600 dark:text-gray-400 text-sm mb-6 flex-1 line-clamp-3 leading-relaxed">
                           {project.description}
                         </p>
                       )}
-                      <div className="flex items-center justify-between pt-6 border-t-2 border-gray-100">
-                        <span className="text-sm text-gray-500 font-medium flex items-center gap-2">
+                      <div className="flex items-center justify-between pt-6 border-t-2 border-gray-100 dark:border-gray-700">
+                        <span className="text-sm text-gray-500 dark:text-gray-400 font-medium flex items-center gap-2">
                           <Clock className="w-4 h-4" />
                           {new Date(project.created_at).toLocaleDateString('en-US', { 
                             month: 'short', 
@@ -237,7 +432,7 @@ export default function DashboardPage() {
                             year: 'numeric' 
                           })}
                         </span>
-                        <span className="text-primary-600 font-bold text-base group-hover:translate-x-2 transition-transform flex items-center gap-1">
+                        <span className="text-primary-600 dark:text-primary-400 font-bold text-base group-hover:translate-x-2 transition-transform flex items-center gap-1">
                           Open
                           <span className="text-xl">→</span>
                         </span>
@@ -264,15 +459,15 @@ export default function DashboardPage() {
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className="bg-white rounded-2xl shadow-2xl max-w-md w-full"
+            className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="p-6 border-b">
-              <h3 className="text-2xl font-bold text-gray-900">Create New Project</h3>
+            <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Create New Project</h3>
             </div>
             <form onSubmit={handleCreateProject} className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Project Name
                 </label>
                 <input
@@ -280,18 +475,18 @@ export default function DashboardPage() {
                   required
                   value={projectName}
                   onChange={(e) => setProjectName(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   placeholder="My Analytics Project"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Description (Optional)
                 </label>
                 <textarea
                   value={projectDesc}
                   onChange={(e) => setProjectDesc(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   rows={3}
                   placeholder="Project description..."
                 />
@@ -306,7 +501,7 @@ export default function DashboardPage() {
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}
-                  className="flex-1 bg-gray-200 text-gray-700 py-3 px-4 rounded-xl font-semibold hover:bg-gray-300 transition"
+                  className="flex-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 py-3 px-4 rounded-xl font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition"
                 >
                   Cancel
                 </button>
