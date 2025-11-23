@@ -7,7 +7,6 @@ import { ArrowLeft, Database, BarChart3, Calculator, Trash2, Upload as UploadIco
 import api from '@/lib/api'
 import { authService } from '@/lib/auth'
 import { showToast } from '@/lib/toast'
-import { ThemeToggle } from '@/components/ThemeToggle'
 import { CardSkeleton } from '@/components/LoadingSkeleton'
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
 import FileUpload from '@/components/FileUpload'
@@ -28,7 +27,7 @@ interface Dataset {
   created_at: string
 }
 
-type ViewMode = 'upload' | 'datasets' | 'profile' | 'visualizations' | 'calculations' | 'export' | 'dashboard' | 'transform'
+type ViewMode = 'upload' | 'datasets' | 'profile' | 'visualizations' | 'calculations' | 'dashboard' | 'transform'
 
 export default function ProjectPage() {
   const params = useParams()
@@ -87,8 +86,6 @@ export default function ProjectPage() {
     {
       key: 'e',
       ctrl: true,
-      action: () => selectedDataset && setCurrentView('export'),
-      description: 'Go to Export'
     },
   ])
 
@@ -173,7 +170,6 @@ export default function ProjectPage() {
     { id: 'visualizations', label: 'Visualizations', icon: BarChart3, requiresDataset: true },
     { id: 'dashboard', label: 'Dashboard', icon: LayoutGrid, requiresDataset: false },
     { id: 'calculations', label: 'Calculations', icon: Calculator, requiresDataset: true },
-    { id: 'export', label: 'Export', icon: Download, requiresDataset: true },
   ]
 
   const canAccessView = (view: ViewMode) => {
@@ -182,9 +178,9 @@ export default function ProjectPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      <div className="min-h-screen bg-gradient-to-br from-[#D9BFA0] via-[#A69677] to-[#D9BFA0]">
       {/* Power BI-like Top Navbar */}
-      <nav className="bg-white dark:bg-gray-800 shadow-lg border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
+      <nav className="bg-white shadow-lg border-b-2 border-[#A69677] sticky top-0 z-50">
         <div className="container mx-auto px-6">
           <div className="flex items-center justify-between h-16">
             {/* Left: Back button and title */}
@@ -193,12 +189,12 @@ export default function ProjectPage() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => router.push('/dashboard')}
-                className="p-2 hover:bg-gray-100 rounded-lg transition"
+                className="p-2 hover:bg-[#D9BFA0] rounded-lg transition"
               >
-                <ArrowLeft className="w-5 h-5 text-gray-700" />
+                <ArrowLeft className="w-5 h-5 text-black" />
               </motion.button>
               <div>
-                <h1 className="text-xl font-bold text-gray-900 dark:text-white">Project Workspace</h1>
+                <h1 className="text-xl font-bold text-black">Project Workspace</h1>
               </div>
             </div>
 
@@ -222,10 +218,10 @@ export default function ProjectPage() {
                     disabled={isDisabled}
                     className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all relative ${
                       isActive
-                        ? 'bg-gradient-to-r from-primary-600 to-indigo-600 text-white shadow-md'
+                        ? 'bg-[#403B33] text-white shadow-md'
                         : isDisabled
-                        ? 'text-gray-400 dark:text-gray-600 cursor-not-allowed'
-                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                        ? 'text-black/40 cursor-not-allowed'
+                        : 'text-black hover:bg-[#D9BFA0]'
                     }`}
                   >
                     <Icon className="w-4 h-4" />
@@ -233,7 +229,7 @@ export default function ProjectPage() {
                     {isActive && (
                       <motion.div
                         layoutId="activeTab"
-                        className="absolute inset-0 bg-gradient-to-r from-primary-600 to-indigo-600 rounded-lg -z-10"
+                        className="absolute inset-0 bg-[#403B33] rounded-lg -z-10"
                         transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                       />
                     )}
@@ -242,17 +238,19 @@ export default function ProjectPage() {
               })}
             </div>
 
-            {/* Right: Selected Dataset Info & Theme Toggle */}
+            {/* Right: Selected Dataset Info & Export Button */}
             <div className="flex items-center gap-3">
               {selectedDataset && (
-                <div className="flex items-center gap-3 px-4 py-2 bg-primary-50 dark:bg-primary-900 rounded-lg border border-primary-200 dark:border-primary-700">
-                  <Database className="w-4 h-4 text-primary-600 dark:text-primary-400" />
-                  <span className="text-sm font-medium text-primary-700 dark:text-primary-300">
-                    {datasets.find(d => d.id === selectedDataset)?.name || 'Dataset'}
-                  </span>
-                </div>
+                <>
+                  <div className="flex items-center gap-3 px-4 py-2 bg-[#BF8A49] rounded-lg border-2 border-[#403B33]">
+                    <Database className="w-4 h-4 text-white" />
+                    <span className="text-sm font-medium text-white">
+                      {datasets.find(d => d.id === selectedDataset)?.name || 'Dataset'}
+                    </span>
+                  </div>
+                  <ExportButton datasetId={selectedDataset} projectId={projectId} />
+                </>
               )}
-              <ThemeToggle />
             </div>
           </div>
         </div>
@@ -274,11 +272,11 @@ export default function ProjectPage() {
               exit={{ opacity: 0, y: -20 }}
               className="max-w-2xl mx-auto"
             >
-              <div className="bg-white rounded-xl shadow-lg p-8">
+              <div className="bg-white rounded-xl shadow-lg p-8 border-2 border-[#A69677]">
                 <div className="text-center mb-6">
-                  <UploadIcon className="w-16 h-16 text-primary-600 mx-auto mb-4" />
-                  <h2 className="text-2xl font-bold text-gray-900 mb-2">Upload Dataset</h2>
-                  <p className="text-gray-600">Upload CSV or Excel files to get started</p>
+                  <UploadIcon className="w-16 h-16 text-[#403B33] mx-auto mb-4" />
+                  <h2 className="text-2xl font-bold text-black mb-2">Upload Dataset</h2>
+                  <p className="text-black">Upload CSV or Excel files to get started</p>
                 </div>
                 <FileUpload projectId={projectId} onUploaded={handleFileUploaded} />
               </div>
@@ -290,20 +288,20 @@ export default function ProjectPage() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
             >
-              <div className="bg-white rounded-xl shadow-lg p-6">
+              <div className="bg-white rounded-xl shadow-lg p-6 border-2 border-[#A69677]">
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-3">
-                    <Database className="w-6 h-6 text-primary-600" />
+                    <Database className="w-6 h-6 text-[#403B33]" />
                     <div>
-                      <h2 className="text-2xl font-bold text-gray-900">Datasets</h2>
-                      <p className="text-sm text-gray-500">{datasets.length} dataset{datasets.length !== 1 ? 's' : ''} available</p>
+                      <h2 className="text-2xl font-bold text-black">Datasets</h2>
+                      <p className="text-sm text-black/70">{datasets.length} dataset{datasets.length !== 1 ? 's' : ''} available</p>
                     </div>
                   </div>
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setCurrentView('upload')}
-                    className="px-4 py-2 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 transition flex items-center gap-2"
+                    className="px-4 py-2 bg-[#403B33] text-white rounded-lg font-semibold hover:bg-[#2d2822] transition flex items-center gap-2"
                   >
                     <UploadIcon className="w-4 h-4" />
                     Upload New
@@ -311,15 +309,15 @@ export default function ProjectPage() {
                 </div>
 
                 {datasets.length === 0 ? (
-                  <div className="text-center py-16 border-2 border-dashed border-gray-300 rounded-xl">
-                    <Database className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                    <p className="text-gray-600 text-lg mb-2">No datasets uploaded yet</p>
-                    <p className="text-sm text-gray-500 mb-6">Upload your first dataset to get started</p>
+                  <div className="text-center py-16 border-2 border-dashed border-[#A69677] rounded-xl">
+                    <Database className="w-16 h-16 text-black/40 mx-auto mb-4" />
+                    <p className="text-black text-lg mb-2">No datasets uploaded yet</p>
+                    <p className="text-sm text-black/70 mb-6">Upload your first dataset to get started</p>
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => setCurrentView('upload')}
-                      className="px-6 py-3 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 transition"
+                      className="px-6 py-3 bg-[#403B33] text-white rounded-lg font-semibold hover:bg-[#2d2822] transition"
                     >
                       Upload Dataset
                     </motion.button>
@@ -337,27 +335,27 @@ export default function ProjectPage() {
                           whileHover={{ y: -4, scale: 1.02 }}
                           className={`relative p-5 rounded-xl border-2 transition cursor-pointer ${
                             isSelected
-                              ? 'border-primary-600 bg-primary-50 shadow-lg'
-                              : 'border-gray-200 bg-white hover:border-primary-300 hover:shadow-md'
+                              ? 'border-2 border-[#0D0D0D] bg-white shadow-lg'
+                              : 'border-2 border-[#A69677] bg-white hover:border-[#403B33] hover:shadow-md'
                           }`}
                           onClick={() => handleDatasetSelect(dataset.id)}
                         >
                           <div className="flex items-start justify-between mb-3">
-                            <div className="p-2 bg-primary-100 rounded-lg">
-                              <Database className="w-5 h-5 text-primary-600" />
+                            <div className="p-2 bg-[#BF8A49] rounded-lg">
+                              <Database className="w-5 h-5 text-white" />
                             </div>
                             <motion.button
                               whileHover={{ scale: 1.1 }}
                               whileTap={{ scale: 0.9 }}
                               onClick={(e) => handleDeleteDataset(dataset.id, e)}
-                              className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition"
+                              className="p-1.5 text-[#BF8A49] hover:bg-[#BF8A49]/20 rounded-lg transition"
                               title="Delete dataset"
                             >
                               <Trash2 className="w-4 h-4" />
                             </motion.button>
                           </div>
-                          <h3 className="font-bold text-gray-900 mb-2 truncate">{dataset.name}</h3>
-                          <div className="space-y-1 text-sm text-gray-600">
+                          <h3 className="font-bold text-black mb-2 truncate">{dataset.name}</h3>
+                          <div className="space-y-1 text-sm text-black/70">
                             <div className="flex items-center gap-2">
                               <Clock className="w-3 h-3" />
                               <span>{date} at {time}</span>
@@ -365,7 +363,7 @@ export default function ProjectPage() {
                             <div>{(dataset.file_size / 1024).toFixed(2)} KB</div>
                           </div>
                           {isSelected && (
-                            <div className="absolute top-2 right-2 w-3 h-3 bg-primary-600 rounded-full"></div>
+                            <div className="absolute top-2 right-2 w-3 h-3 bg-[#0D0D0D] rounded-full"></div>
                           )}
                         </motion.div>
                       )
@@ -411,15 +409,6 @@ export default function ProjectPage() {
                 availableColumns={profileData.columns}
               />
             </motion.div>
-          ) : currentView === 'export' && selectedDataset ? (
-            <motion.div
-              key="export"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-            >
-              <ExportButton datasetId={selectedDataset} projectId={projectId} />
-            </motion.div>
           ) : currentView === 'dashboard' ? (
             <motion.div
               key="dashboard"
@@ -453,16 +442,16 @@ export default function ProjectPage() {
               key="empty"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="bg-white rounded-xl shadow-lg p-12 text-center"
+              className="bg-white rounded-xl shadow-lg p-12 text-center border-2 border-[#A69677]"
             >
-              <Database className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600 text-lg mb-2">Select a dataset to get started</p>
-              <p className="text-sm text-gray-500 mb-6">Go to Datasets tab and select a dataset</p>
+              <Database className="w-16 h-16 text-black/40 mx-auto mb-4" />
+              <p className="text-black text-lg mb-2">Select a dataset to get started</p>
+              <p className="text-sm text-black/70 mb-6">Go to Datasets tab and select a dataset</p>
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setCurrentView('datasets')}
-                className="px-6 py-3 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 transition"
+                className="px-6 py-3 bg-[#403B33] text-white rounded-lg font-semibold hover:bg-[#2d2822] transition"
               >
                 View Datasets
               </motion.button>

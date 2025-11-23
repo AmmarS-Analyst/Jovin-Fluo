@@ -2,18 +2,20 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { authService, RegisterData } from '@/lib/auth'
+import { authService } from '@/lib/auth'
+import { showToast } from '@/lib/toast'
 
 export default function RegisterPage() {
   const router = useRouter()
-  const [formData, setFormData] = useState<RegisterData>({
+  const [formData, setFormData] = useState({
+    full_name: '',
     email: '',
     password: '',
-    full_name: '',
   })
-  const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -22,53 +24,33 @@ export default function RegisterPage() {
 
     try {
       await authService.register(formData)
-      // Auto-login after registration
-      const loginResult = await authService.login({
-        email: formData.email,
-        password: formData.password,
-      })
-      if (loginResult && loginResult.access_token) {
-        // Small delay to ensure cookie is set
-        await new Promise(resolve => setTimeout(resolve, 100))
-        router.push('/dashboard')
-        router.refresh()
-      } else {
-        setError('Registration successful but login failed. Please try logging in.')
-        setLoading(false)
-      }
+      showToast.success('Registration successful! Please login.')
+      router.push('/login')
     } catch (err: any) {
-      console.error('Register error:', err)
-      let errorMessage = 'Registration failed. Please try again.'
-      
-      if (err.message?.includes('Cannot connect to server') || err.message?.includes('Network error')) {
-        errorMessage = err.message
-      } else if (err.response?.data?.detail) {
-        errorMessage = err.response.data.detail
-      } else if (err.message) {
-        errorMessage = err.message
-      }
-      
+      const errorMessage = err.response?.data?.detail || err.message || 'Registration failed. Please try again.'
       setError(errorMessage)
+      showToast.error(errorMessage)
+    } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4">
-      <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
-        <h1 className="text-3xl font-bold text-center mb-8 text-gray-900">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#D9BFA0] via-[#A69677] to-[#D9BFA0] px-4">
+      <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 border-2 border-[#A69677]">
+        <h1 className="text-3xl font-bold text-center mb-8 text-black">
           Create Account
         </h1>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+          <div className="mb-4 p-3 bg-[#BF8A49]/20 border-2 border-[#BF8A49] text-black rounded">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label htmlFor="full_name" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="full_name" className="block text-sm font-medium text-black mb-2">
               Full Name
             </label>
             <input
@@ -76,13 +58,13 @@ export default function RegisterPage() {
               type="text"
               value={formData.full_name}
               onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              className="w-full px-4 py-2 border-2 border-[#A69677] rounded-lg focus:ring-2 focus:ring-[#403B33] focus:border-[#403B33] bg-white text-black transition"
               placeholder="John Doe"
             />
           </div>
 
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="email" className="block text-sm font-medium text-black mb-2">
               Email
             </label>
             <input
@@ -91,13 +73,13 @@ export default function RegisterPage() {
               required
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              className="w-full px-4 py-2 border-2 border-[#A69677] rounded-lg focus:ring-2 focus:ring-[#403B33] focus:border-[#403B33] bg-white text-black transition"
               placeholder="you@example.com"
             />
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="password" className="block text-sm font-medium text-black mb-2">
               Password
             </label>
             <input
@@ -106,7 +88,7 @@ export default function RegisterPage() {
               required
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              className="w-full px-4 py-2 border-2 border-[#A69677] rounded-lg focus:ring-2 focus:ring-[#403B33] focus:border-[#403B33] bg-white text-black transition"
               placeholder="••••••••"
               minLength={6}
             />
@@ -115,15 +97,15 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-primary-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-primary-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-[#403B33] text-white py-2 px-4 rounded-lg font-semibold hover:bg-[#2d2822] transition disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
           >
             {loading ? 'Creating account...' : 'Sign Up'}
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-gray-600">
+        <p className="mt-6 text-center text-sm text-black">
           Already have an account?{' '}
-          <Link href="/login" className="text-primary-600 hover:text-primary-700 font-semibold">
+          <Link href="/login" className="text-[#403B33] hover:text-[#2d2822] font-semibold underline">
             Sign in
           </Link>
         </p>
@@ -131,4 +113,3 @@ export default function RegisterPage() {
     </div>
   )
 }
-

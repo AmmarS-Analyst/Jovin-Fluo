@@ -3,15 +3,14 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 255, 255, 255;
-  --background-end-rgb: 255, 255, 255;
-}
-
-.dark {
-  --foreground-rgb: 255, 255, 255;
-  --background-start-rgb: 17, 24, 39;
-  --background-end-rgb: 17, 24, 39;
+  --foreground-rgb: 0, 0, 0; /* Black text */
+  --background-start-rgb: 217, 191, 160; /* #D9BFA0 - light beige */
+  --background-end-rgb: 166, 150, 119; /* #A69677 - medium tan */
+  --primary-dark: #403B33;
+  --primary-light: #BF8A49;
+  --selected-outline: #0D0D0D;
+  --text-primary: #000000;
+  --text-white: #FFFFFF;
 }
 
 * {
@@ -30,10 +29,9 @@ body {
   color: rgb(var(--foreground-rgb));
   background: linear-gradient(
       to bottom,
-      transparent,
+      rgb(var(--background-start-rgb)),
       rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+    );
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -48,23 +46,23 @@ a {
   }
 }
 
-/* Dark mode scrollbar */
-.dark ::-webkit-scrollbar {
+/* Professional scrollbar */
+::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
-.dark ::-webkit-scrollbar-track {
-  background: rgb(31, 41, 55);
+::-webkit-scrollbar-track {
+  background: #D9BFA0;
 }
 
-.dark ::-webkit-scrollbar-thumb {
-  background: rgb(75, 85, 99);
+::-webkit-scrollbar-thumb {
+  background: #A69677;
   border-radius: 4px;
 }
 
-.dark ::-webkit-scrollbar-thumb:hover {
-  background: rgb(107, 114, 128);
+::-webkit-scrollbar-thumb:hover {
+  background: #403B33;
 }
 
 /* React Grid Layout Styles */
@@ -98,8 +96,8 @@ a {
 }
 
 .react-grid-item.react-grid-placeholder {
-  background: rgb(59, 130, 246);
-  opacity: 0.2;
+  background: #BF8A49;
+  opacity: 0.3;
   transition-duration: 100ms;
   z-index: 2;
   user-select: none;
@@ -125,6 +123,47 @@ a {
   bottom: 3px;
   width: 5px;
   height: 5px;
-  border-right: 2px solid rgba(0, 0, 0, 0.4);
-  border-bottom: 2px solid rgba(0, 0, 0, 0.4);
+  border-right: 2px solid rgba(64, 59, 51, 0.6);
+  border-bottom: 2px solid rgba(64, 59, 51, 0.6);
+}
+
+/* Custom scrollbar for data preview */
+.overflow-y-auto::-webkit-scrollbar,
+.overflow-auto::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track,
+.overflow-auto::-webkit-scrollbar-track {
+  background: rgb(var(--background-start-rgb));
+  border-radius: 4px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb,
+.overflow-auto::-webkit-scrollbar-thumb {
+  background: rgb(var(--button-secondary));
+  border-radius: 4px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover,
+.overflow-auto::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--button-primary));
+}
+
+/* Horizontal scrollbar always visible at bottom */
+.overflow-auto::-webkit-scrollbar:horizontal {
+  height: 8px;
+}
+
+/* Force horizontal scrollbar to appear at bottom of viewport */
+.overflow-x-auto {
+  position: relative;
+}
+
+.overflow-x-auto::-webkit-scrollbar:horizontal {
+  position: sticky;
+  bottom: 0;
+  height: 8px;
+  z-index: 20;
 }

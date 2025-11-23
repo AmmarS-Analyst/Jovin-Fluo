@@ -48,19 +48,19 @@ export default function DraggableField({ field, type, onRemove, onDrop }: Dragga
       onDrop={handleDrop}
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
-      className={`flex items-center gap-2 p-3 bg-white dark:bg-gray-700 border-2 border-dashed rounded-lg cursor-move transition ${
+      className={`flex items-center gap-2 p-3 bg-white border-2 border-dashed rounded-lg cursor-move transition ${
         isDragging
-          ? 'opacity-50 border-primary-500'
-          : 'border-gray-300 dark:border-gray-600 hover:border-primary-400'
+          ? 'opacity-50 border-[#403B33]'
+          : 'border-[#A69677] hover:border-[#403B33]'
       }`}
     >
-      <GripVertical className="w-4 h-4 text-gray-400" />
-      <span className="flex-1 text-sm font-medium text-gray-700 dark:text-gray-300">{field}</span>
+      <GripVertical className="w-4 h-4 text-[#403B33]" />
+      <span className="flex-1 text-sm font-medium text-black">{field}</span>
       <motion.button
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         onClick={onRemove}
-        className="p-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-900 rounded"
+        className="p-1 text-[#BF8A49] hover:bg-[#BF8A49]/20 rounded"
       >
         <X className="w-3 h-3" />
       </motion.button>

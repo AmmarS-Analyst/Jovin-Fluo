@@ -10,12 +10,14 @@ import {
 import { 
   BarChart3, TrendingUp, PieChart as PieChartIcon, AreaChart as AreaChartIcon, 
   ScatterChart as ScatterIcon, Save, FileText, Check, Layers, Gauge, 
-  Activity, Zap, Settings, Palette, X, ChevronRight
+  Activity, Zap, Settings, Palette, X
 } from 'lucide-react'
 import api from '@/lib/api'
 import { showToast } from '@/lib/toast'
 import AdvancedColorPicker from './AdvancedColorPicker'
 import DraggableField from './DraggableField'
+import FormatPaneContent from './FormatPaneContent'
+import VisualsPaneContent from './VisualsPaneContent'
 
 interface VisualizationBuilderProps {
   datasetId: number
@@ -511,206 +513,26 @@ export default function VisualizationBuilder({ datasetId, profileData, projectId
 
             {/* Visuals Pane Content */}
             {activePane === 'visuals' && (
-              <div className="flex-1 overflow-y-auto pr-2 space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-black mb-2">Chart Type</label>
-            <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto">
-              {CHART_TYPES.map((type) => {
-                const Icon = type.icon
-                return (
-                  <motion.button
-                    key={type.value}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => setChartType(type.value)}
-                    className={`p-3 rounded-lg border-2 transition ${
-                      chartType === type.value
-                        ? 'border-[#0D0D0D] bg-white'
-                        : 'border-2 border-[#A69677] hover:border-[#403B33]'
-                    }`}
-                  >
-                    <Icon className="w-5 h-5 mx-auto mb-1" />
-                    <div className="text-xs font-medium">{type.label}</div>
-                  </motion.button>
-                )
-              })}
-            </div>
-          </div>
-
-          {/* Available Fields - Draggable */}
-          <div>
-            <label className="block text-sm font-medium text-black mb-2">
-              Available Fields (Drag to axes below)
-            </label>
-            <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto p-2 bg-[#D9BFA0] rounded-lg border-2 border-[#A69677]">
-              {availableFields.map((col) => (
-                <div
-                  key={col.name}
-                  draggable
-                  onDragStart={(e: React.DragEvent<HTMLDivElement>) => {
-                    e.dataTransfer.effectAllowed = 'move'
-                    e.dataTransfer.setData('text/plain', JSON.stringify({ field: col.name, type: col.type }))
-                  }}
-                  className="px-3 py-2 bg-white border-2 border-[#A69677] rounded-lg cursor-move text-sm font-medium text-black hover:border-[#403B33] transition hover:scale-105"
-                >
-                  {col.name}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* X-Axis Drop Zone */}
-          <div>
-            <label className="block text-sm font-medium text-black mb-2">X-Axis (Category)</label>
-            <div
-              onDragOver={(e) => {
-                e.preventDefault()
-                e.dataTransfer.dropEffect = 'move'
-              }}
-              onDrop={(e) => {
-                e.preventDefault()
-                try {
-                  const data = JSON.parse(e.dataTransfer.getData('text/plain'))
-                  if (data.type === 'string' || stringColumns.some((c: any) => c.name === data.field)) {
-                    setXAxis(data.field)
-                  } else {
-                    showToast.error('X-axis must be a string/category column')
-                  }
-                } catch (error) {
-                  console.error('Failed to parse drag data:', error)
-                }
-              }}
-              className="min-h-[60px] p-3 border-2 border-dashed border-[#A69677] rounded-lg bg-white hover:border-[#403B33] transition"
-            >
-              {xAxis ? (
-                <DraggableField
-                  field={xAxis}
-                  type="x-axis"
-                  onRemove={() => setXAxis('')}
-                  onDrop={handleFieldDrop}
-                />
-              ) : (
-                <div className="text-center text-black text-sm py-2">
-                  Drag a field here or select from dropdown
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Y-Axis Drop Zone */}
-          <div>
-            <label className="block text-sm font-medium text-black mb-2">Y-Axis (Value)</label>
-            <div
-              onDragOver={(e) => {
-                e.preventDefault()
-                e.dataTransfer.dropEffect = 'move'
-              }}
-              onDrop={(e) => {
-                e.preventDefault()
-                try {
-                  const data = JSON.parse(e.dataTransfer.getData('text/plain'))
-                  if (data.type === 'numeric' || numericColumns.some((c: any) => c.name === data.field)) {
-                    setYAxis(data.field)
-                  } else {
-                    showToast.error('Y-axis must be a numeric column')
-                  }
-                } catch (error) {
-                  console.error('Failed to parse drag data:', error)
-                }
-              }}
-              className="min-h-[60px] p-3 border-2 border-dashed border-[#A69677] rounded-lg bg-white hover:border-[#403B33] transition"
-            >
-              {yAxis ? (
-                <DraggableField
-                  field={yAxis}
-                  type="y-axis"
-                  onRemove={() => setYAxis('')}
-                  onDrop={handleFieldDrop}
-                />
-              ) : (
-                <div className="text-center text-black text-sm py-2">
-                  Drag a numeric field here
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Y-Axis 2 Drop Zone */}
-          {(chartType === 'composed' || chartType === 'bar' || chartType === 'line' || chartType === 'area') && (
-            <div>
-              <label className="block text-sm font-medium text-black mb-2">Y-Axis 2 (Optional)</label>
-              <div
-                onDragOver={(e) => {
-                  e.preventDefault()
-                  e.dataTransfer.dropEffect = 'move'
-                }}
-                onDrop={(e) => {
-                  e.preventDefault()
-                  try {
-                    const data = JSON.parse(e.dataTransfer.getData('text/plain'))
-                    if (data.type === 'numeric' || numericColumns.some((c: any) => c.name === data.field)) {
-                      setYAxis2(data.field)
-                    } else {
-                      showToast.error('Y-axis 2 must be a numeric column')
-                    }
-                  } catch (error) {
-                    console.error('Failed to parse drag data:', error)
-                  }
-                }}
-                className="min-h-[60px] p-3 border-2 border-dashed border-[#A69677] rounded-lg bg-white hover:border-[#403B33] transition"
-              >
-                {yAxis2 ? (
-                  <DraggableField
-                    field={yAxis2}
-                    type="y-axis2"
-                    onRemove={() => setYAxis2('')}
-                    onDrop={handleFieldDrop}
-                  />
-                ) : (
-                  <div className="text-center text-black text-sm py-2">
-                    Drag a numeric field here (optional)
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => generateChart()}
-            className="w-full bg-[#403B33] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#2d2822] transition shadow-md"
-          >
-            Generate Chart
-          </motion.button>
-
-          {chartData.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="space-y-2"
-            >
-              <input
-                type="text"
-                value={chartName}
-                onChange={(e) => setChartName(e.target.value)}
-                placeholder="Chart name..."
-                className="w-full px-4 py-2 border-2 border-[#A69677] rounded-lg focus:ring-2 focus:ring-[#403B33] focus:border-[#403B33] bg-white text-black"
+              <VisualsPaneContent
+                chartType={chartType}
+                setChartType={setChartType}
+                availableFields={availableFields}
+                xAxis={xAxis}
+                setXAxis={setXAxis}
+                yAxis={yAxis}
+                setYAxis={setYAxis}
+                yAxis2={yAxis2}
+                setYAxis2={setYAxis2}
+                handleFieldDrop={handleFieldDrop}
+                numericColumns={numericColumns}
+                stringColumns={stringColumns}
+                generateChart={generateChart}
+                chartData={chartData}
+                chartName={chartName}
+                setChartName={setChartName}
+                saveVisualization={saveVisualization}
+                loading={loading}
               />
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={saveVisualization}
-                disabled={loading}
-                className="w-full bg-[#403B33] text-white py-2 px-4 rounded-lg font-semibold hover:bg-[#2d2822] transition flex items-center justify-center gap-2 disabled:opacity-50"
-              >
-                <Save className="w-4 h-4" />
-                {loading ? 'Saving...' : 'Save Visualization'}
-              </motion.button>
-            </motion.div>
-          )}
-              </div>
             )}
 
             {/* Format Pane Content */}
@@ -723,81 +545,6 @@ export default function VisualizationBuilder({ datasetId, profileData, projectId
                 chartType={chartType}
                 yAxis2={yAxis2}
               />
-            )}
-                  
-                  <div className="flex items-center justify-between p-3 bg-white rounded-lg border-2 border-[#A69677]">
-                    <label htmlFor="showGrid" className="text-sm font-medium text-black cursor-pointer">
-                      Show Grid
-                    </label>
-                    <input
-                      type="checkbox"
-                      id="showGrid"
-                      checked={chartConfig.showGrid}
-                      onChange={(e) => {
-                        setChartConfig({ ...chartConfig, showGrid: e.target.checked })
-                        if (chartData.length > 0) generateChart()
-                      }}
-                      className="w-5 h-5 rounded border-2 border-[#A69677] text-[#403B33] focus:ring-[#403B33] cursor-pointer"
-                    />
-                  </div>
-
-                  <div className="flex items-center justify-between p-3 bg-white rounded-lg border-2 border-[#A69677]">
-                    <label htmlFor="showLegend" className="text-sm font-medium text-black cursor-pointer">
-                      Show Legend
-                    </label>
-                    <input
-                      type="checkbox"
-                      id="showLegend"
-                      checked={chartConfig.showLegend}
-                      onChange={(e) => {
-                        setChartConfig({ ...chartConfig, showLegend: e.target.checked })
-                        if (chartData.length > 0) generateChart()
-                      }}
-                      className="w-5 h-5 rounded border-2 border-[#A69677] text-[#403B33] focus:ring-[#403B33] cursor-pointer"
-                    />
-                  </div>
-
-                  {(chartType === 'bar' || chartType === 'area') && (
-                    <div className="flex items-center justify-between p-3 bg-white rounded-lg border-2 border-[#A69677]">
-                      <label htmlFor="stacked" className="text-sm font-medium text-black cursor-pointer">
-                        Stacked Bars
-                      </label>
-                      <input
-                        type="checkbox"
-                        id="stacked"
-                        checked={chartConfig.stacked}
-                        onChange={(e) => {
-                          setChartConfig({ ...chartConfig, stacked: e.target.checked })
-                          if (chartData.length > 0) generateChart()
-                        }}
-                        className="w-5 h-5 rounded border-2 border-[#A69677] text-[#403B33] focus:ring-[#403B33] cursor-pointer"
-                      />
-                    </div>
-                  )}
-
-                  {chartType === 'bar' && (
-                    <div className="p-3 bg-white rounded-lg border-2 border-[#A69677]">
-                      <label className="block text-sm font-medium text-black mb-2">
-                        Bar Size: {chartConfig.barSize}
-                      </label>
-                      <input
-                        type="range"
-                        min="10"
-                        max="100"
-                        value={chartConfig.barSize}
-                        onChange={(e) => {
-                          setChartConfig({ ...chartConfig, barSize: parseInt(e.target.value) })
-                          if (chartData.length > 0) generateChart()
-                        }}
-                        className="w-full h-2 bg-[#D9BFA0] rounded-lg appearance-none cursor-pointer"
-                        style={{
-                          background: `linear-gradient(to right, #403B33 0%, #403B33 ${chartConfig.barSize}%, #D9BFA0 ${chartConfig.barSize}%, #D9BFA0 100%)`
-                        }}
-                      />
-                    </div>
-                  )}
-                </div>
-              </div>
             )}
           </div>
         </div>

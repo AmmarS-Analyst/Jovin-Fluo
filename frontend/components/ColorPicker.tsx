@@ -28,7 +28,7 @@ export default function ColorPicker({ color, onChange, label }: ColorPickerProps
   return (
     <div className="relative">
       {label && (
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        <label className="block text-sm font-medium text-black mb-2">
           {label}
         </label>
       )}
@@ -37,14 +37,14 @@ export default function ColorPicker({ color, onChange, label }: ColorPickerProps
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center gap-2 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition"
+          className="flex items-center gap-2 px-3 py-2 border-2 border-[#A69677] rounded-lg bg-white hover:bg-[#D9BFA0] transition"
         >
           <div
-            className="w-6 h-6 rounded border-2 border-gray-300 dark:border-gray-600"
+            className="w-6 h-6 rounded border-2 border-[#A69677]"
             style={{ backgroundColor: color }}
           />
-          <span className="text-sm font-mono text-gray-700 dark:text-gray-300">{color.toUpperCase()}</span>
-          <Palette className="w-4 h-4 text-gray-500" />
+          <span className="text-sm font-mono text-black">{color.toUpperCase()}</span>
+          <Palette className="w-4 h-4 text-[#403B33]" />
         </motion.button>
       </div>
 
@@ -59,15 +59,15 @@ export default function ColorPicker({ color, onChange, label }: ColorPickerProps
               initial={{ opacity: 0, scale: 0.95, y: -10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: -10 }}
-              className="absolute top-full left-0 mt-2 z-20 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 p-4 w-80"
+              className="absolute top-full left-0 mt-2 z-20 bg-white rounded-xl shadow-2xl border-2 border-[#A69677] p-4 w-80"
             >
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Color Picker</h3>
+                <h3 className="text-sm font-semibold text-black">Color Picker</h3>
                 <motion.button
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                   onClick={() => setIsOpen(false)}
-                  className="p-1 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                  className="p-1 text-black hover:text-black/70"
                 >
                   <X className="w-4 h-4" />
                 </motion.button>
@@ -75,7 +75,7 @@ export default function ColorPicker({ color, onChange, label }: ColorPickerProps
 
               {/* Preset Colors */}
               <div className="mb-4">
-                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-xs font-medium text-black mb-2">
                   Preset Colors
                 </label>
                 <div className="grid grid-cols-6 gap-2">
@@ -87,8 +87,8 @@ export default function ColorPicker({ color, onChange, label }: ColorPickerProps
                       onClick={() => handleColorChange(presetColor)}
                       className={`w-8 h-8 rounded border-2 transition ${
                         color === presetColor
-                          ? 'border-gray-900 dark:border-white ring-2 ring-primary-500'
-                          : 'border-gray-300 dark:border-gray-600 hover:border-gray-500'
+                          ? 'border-[#0D0D0D] ring-2 ring-[#403B33]'
+                          : 'border-[#A69677] hover:border-[#403B33]'
                       }`}
                       style={{ backgroundColor: presetColor }}
                       title={presetColor}
@@ -99,7 +99,7 @@ export default function ColorPicker({ color, onChange, label }: ColorPickerProps
 
               {/* Custom Color Input */}
               <div className="mb-4">
-                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-xs font-medium text-black mb-2">
                   Custom Color (Hex Code)
                 </label>
                 <div className="flex items-center gap-2">
@@ -107,7 +107,7 @@ export default function ColorPicker({ color, onChange, label }: ColorPickerProps
                     type="color"
                     value={customColor}
                     onChange={(e) => handleColorChange(e.target.value)}
-                    className="w-12 h-10 rounded border border-gray-300 dark:border-gray-600 cursor-pointer"
+                    className="w-12 h-10 rounded border-2 border-[#A69677] cursor-pointer"
                   />
                   <input
                     type="text"
@@ -119,21 +119,21 @@ export default function ColorPicker({ color, onChange, label }: ColorPickerProps
                       }
                     }}
                     placeholder="#000000"
-                    className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-mono text-sm focus:ring-2 focus:ring-primary-500"
+                    className="flex-1 px-3 py-2 border-2 border-[#A69677] rounded-lg bg-white text-black font-mono text-sm focus:ring-2 focus:ring-[#403B33] focus:border-[#403B33]"
                   />
                 </div>
               </div>
 
               {/* Color Preview */}
-              <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+              <div className="pt-4 border-t border-[#A69677]">
                 <div className="flex items-center gap-2">
                   <div
-                    className="w-12 h-12 rounded border-2 border-gray-300 dark:border-gray-600"
+                    className="w-12 h-12 rounded border-2 border-[#A69677]"
                     style={{ backgroundColor: customColor }}
                   />
                   <div>
-                    <div className="text-xs font-medium text-gray-700 dark:text-gray-300">Selected Color</div>
-                    <div className="text-xs font-mono text-gray-500 dark:text-gray-400">{customColor.toUpperCase()}</div>
+                    <div className="text-xs font-medium text-black">Selected Color</div>
+                    <div className="text-xs font-mono text-black/70">{customColor.toUpperCase()}</div>
                   </div>
                 </div>
               </div>

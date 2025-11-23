@@ -112,7 +112,7 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      <div className="min-h-screen bg-gradient-to-br from-[#D9BFA0] via-[#A69677] to-[#D9BFA0]">
         <div className="container mx-auto px-6 py-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3, 4, 5, 6].map((i) => (
@@ -125,9 +125,9 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      <div className="min-h-screen bg-gradient-to-br from-[#D9BFA0] via-[#A69677] to-[#D9BFA0]">
       {/* Enhanced Navbar */}
-      <nav className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg shadow-xl border-b border-gray-200/50 dark:border-gray-700/50 sticky top-0 z-50">
+      <nav className="bg-white/95 backdrop-blur-lg shadow-lg border-b-2 border-[#A69677] sticky top-0 z-50">
         <div className="container mx-auto px-6 py-5">
           <div className="flex items-center justify-between">
             <motion.div 
@@ -135,14 +135,14 @@ export default function DashboardPage() {
               animate={{ opacity: 1, x: 0 }}
               className="flex items-center gap-4"
             >
-              <div className="p-3 bg-gradient-to-br from-primary-600 via-indigo-600 to-purple-600 rounded-2xl shadow-lg">
+              <div className="p-3 bg-[#403B33] rounded-2xl shadow-lg">
                 <BarChart3 className="w-7 h-7 text-white" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-primary-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                <h1 className="text-3xl font-bold text-black">
                   Jovin Fluo
                 </h1>
-                <p className="text-xs text-gray-600 dark:text-gray-400 font-medium">Data Analytics Platform</p>
+                <p className="text-xs text-black font-medium">Data Analytics Platform</p>
               </div>
             </motion.div>
             <motion.div 
@@ -154,7 +154,7 @@ export default function DashboardPage() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={handleLogout}
-                className="px-5 py-2.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-all flex items-center gap-2 font-medium shadow-sm hover:shadow"
+                className="px-5 py-2.5 text-[#403B33] hover:bg-[#BF8A49] hover:text-white rounded-xl transition-all flex items-center gap-2 font-medium shadow-sm hover:shadow"
               >
                 <LogOut className="w-4 h-4" />
                 Logout
@@ -173,60 +173,60 @@ export default function DashboardPage() {
         >
           <motion.div
             whileHover={{ y: -4, scale: 1.02 }}
-            className="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-primary-600"
+            className="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-[#403B33]"
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600 mb-1">Total Projects</p>
-                <p className="text-3xl font-bold text-gray-900">{stats.totalProjects}</p>
+                <p className="text-sm font-medium text-black mb-1">Total Projects</p>
+                <p className="text-3xl font-bold text-black">{stats.totalProjects}</p>
               </div>
-              <div className="p-3 bg-primary-100 rounded-xl">
-                <Database className="w-6 h-6 text-primary-600" />
+              <div className="p-3 bg-[#BF8A49] rounded-xl">
+                <Database className="w-6 h-6 text-white" />
               </div>
             </div>
           </motion.div>
 
           <motion.div
             whileHover={{ y: -4, scale: 1.02 }}
-            className="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-indigo-600"
+            className="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-[#BF8A49]"
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600 mb-1">Datasets</p>
-                <p className="text-3xl font-bold text-gray-900">{stats.totalDatasets}</p>
+                <p className="text-sm font-medium text-black mb-1">Datasets</p>
+                <p className="text-3xl font-bold text-black">{stats.totalDatasets}</p>
               </div>
-              <div className="p-3 bg-indigo-100 rounded-xl">
-                <FileText className="w-6 h-6 text-indigo-600" />
+              <div className="p-3 bg-[#BF8A49] rounded-xl">
+                <FileText className="w-6 h-6 text-white" />
               </div>
             </div>
           </motion.div>
 
           <motion.div
             whileHover={{ y: -4, scale: 1.02 }}
-            className="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-purple-600"
+            className="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-[#BF8A49]"
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600 mb-1">Visualizations</p>
-                <p className="text-3xl font-bold text-gray-900">{stats.totalVisualizations}</p>
+                <p className="text-sm font-medium text-black mb-1">Visualizations</p>
+                <p className="text-3xl font-bold text-black">{stats.totalVisualizations}</p>
               </div>
-              <div className="p-3 bg-purple-100 rounded-xl">
-                <BarChart3 className="w-6 h-6 text-purple-600" />
+              <div className="p-3 bg-[#BF8A49] rounded-xl">
+                <BarChart3 className="w-6 h-6 text-white" />
               </div>
             </div>
           </motion.div>
 
           <motion.div
             whileHover={{ y: -4, scale: 1.02 }}
-            className="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-green-600"
+            className="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-[#403B33]"
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600 mb-1">Activity</p>
-                <p className="text-3xl font-bold text-gray-900">{stats.recentActivity.length}</p>
+                <p className="text-sm font-medium text-black mb-1">Activity</p>
+                <p className="text-3xl font-bold text-black">{stats.recentActivity.length}</p>
               </div>
-              <div className="p-3 bg-green-100 rounded-xl">
-                <Activity className="w-6 h-6 text-green-600" />
+              <div className="p-3 bg-[#BF8A49] rounded-xl">
+                <Activity className="w-6 h-6 text-white" />
               </div>
             </div>
           </motion.div>
@@ -240,16 +240,16 @@ export default function DashboardPage() {
         >
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-8">
             <div>
-              <h2 className="text-5xl font-bold bg-gradient-to-r from-gray-900 via-primary-600 to-indigo-600 bg-clip-text text-transparent mb-3">
+              <h2 className="text-5xl font-bold text-black mb-3">
                 My Projects
               </h2>
-              <p className="text-lg text-gray-600 dark:text-gray-400">Manage your analytics projects and datasets</p>
+              <p className="text-lg text-black">Manage your analytics projects and datasets</p>
             </div>
             <motion.button
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setShowCreateModal(true)}
-              className="px-8 py-4 bg-gradient-to-r from-primary-600 via-indigo-600 to-purple-600 text-white rounded-2xl font-bold hover:from-primary-700 hover:via-indigo-700 hover:to-purple-700 transition-all shadow-xl hover:shadow-2xl flex items-center gap-3 text-lg"
+              className="px-8 py-4 bg-[#403B33] text-white rounded-2xl font-bold hover:bg-[#2d2822] transition-all shadow-xl hover:shadow-2xl flex items-center gap-3 text-lg"
             >
               <FolderPlus className="w-6 h-6" />
               New Project
@@ -263,13 +263,13 @@ export default function DashboardPage() {
             transition={{ delay: 0.1 }}
             className="relative max-w-lg"
           >
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-black w-5 h-5" />
             <input
               type="text"
               placeholder="Search projects by name or description..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-lg hover:shadow-xl transition-all text-lg"
+              className="w-full pl-12 pr-4 py-4 border-2 border-[#A69677] rounded-2xl focus:ring-2 focus:ring-[#403B33] focus:border-[#403B33] bg-white text-black shadow-lg hover:shadow-xl transition-all text-lg"
             />
           </motion.div>
         </motion.div>
@@ -282,13 +282,13 @@ export default function DashboardPage() {
             transition={{ delay: 0.2 }}
             className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8"
           >
-            <div className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+            <div className="lg:col-span-2 bg-white rounded-2xl shadow-lg p-6 border-2 border-[#A69677]">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                  <Activity className="w-5 h-5 text-primary-600" />
+                <h3 className="text-xl font-bold text-black flex items-center gap-2">
+                  <Activity className="w-5 h-5 text-[#403B33]" />
                   Recent Activity
                 </h3>
-                <button className="text-sm text-primary-600 hover:text-primary-700 font-medium">
+                <button className="text-sm text-[#403B33] hover:text-[#2d2822] font-medium">
                   View All
                 </button>
               </div>
@@ -299,15 +299,15 @@ export default function DashboardPage() {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.3 + index * 0.1 }}
-                    className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition cursor-pointer"
+                    className="flex items-center gap-3 p-3 rounded-lg hover:bg-[#D9BFA0] transition cursor-pointer border border-transparent hover:border-[#A69677]"
                     onClick={() => router.push(`/project/${activity.id}`)}
                   >
-                    <div className="p-2 bg-primary-100 dark:bg-primary-900 rounded-lg">
-                      <Database className="w-4 h-4 text-primary-600 dark:text-primary-400" />
+                    <div className="p-2 bg-[#BF8A49] rounded-lg">
+                      <Database className="w-4 h-4 text-white" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-gray-900 dark:text-white truncate">{activity.name}</p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                      <p className="font-medium text-black truncate">{activity.name}</p>
+                      <p className="text-sm text-black/70">
                         {new Date(activity.date).toLocaleDateString('en-US', { 
                           month: 'short', 
                           day: 'numeric', 
@@ -317,15 +317,15 @@ export default function DashboardPage() {
                         })}
                       </p>
                     </div>
-                    <ArrowRight className="w-4 h-4 text-gray-400" />
+                    <ArrowRight className="w-4 h-4 text-[#403B33]" />
                   </motion.div>
                 ))}
               </div>
             </div>
 
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                <Zap className="w-5 h-5 text-primary-600" />
+            <div className="bg-white rounded-2xl shadow-lg p-6 border-2 border-[#A69677]">
+              <h3 className="text-xl font-bold text-black mb-4 flex items-center gap-2">
+                <Zap className="w-5 h-5 text-[#BF8A49]" />
                 Quick Actions
               </h3>
               <div className="space-y-3">
@@ -333,7 +333,7 @@ export default function DashboardPage() {
                   whileHover={{ scale: 1.02, x: 4 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => setShowCreateModal(true)}
-                  className="w-full p-4 bg-gradient-to-r from-primary-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-primary-700 hover:to-indigo-700 transition flex items-center justify-between shadow-lg"
+                  className="w-full p-4 bg-[#403B33] text-white rounded-xl font-semibold hover:bg-[#2d2822] transition flex items-center justify-between shadow-lg"
                 >
                   <span className="flex items-center gap-2">
                     <FolderPlus className="w-5 h-5" />
@@ -344,7 +344,7 @@ export default function DashboardPage() {
                 <motion.button
                   whileHover={{ scale: 1.02, x: 4 }}
                   whileTap={{ scale: 0.98 }}
-                  className="w-full p-4 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-200 dark:hover:bg-gray-600 transition flex items-center justify-between"
+                  className="w-full p-4 bg-[#BF8A49] text-white rounded-xl font-semibold hover:bg-[#A6753A] transition flex items-center justify-between"
                 >
                   <span className="flex items-center gap-2">
                     <LayoutGrid className="w-5 h-5" />
@@ -355,7 +355,7 @@ export default function DashboardPage() {
                 <motion.button
                   whileHover={{ scale: 1.02, x: 4 }}
                   whileTap={{ scale: 0.98 }}
-                  className="w-full p-4 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-200 dark:hover:bg-gray-600 transition flex items-center justify-between"
+                  className="w-full p-4 bg-[#BF8A49] text-white rounded-xl font-semibold hover:bg-[#A6753A] transition flex items-center justify-between"
                 >
                   <span className="flex items-center gap-2">
                     <BarChart3 className="w-5 h-5" />
@@ -373,13 +373,13 @@ export default function DashboardPage() {
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="text-center py-20 bg-white dark:bg-gray-800 rounded-2xl shadow-lg border-2 border-dashed border-gray-300 dark:border-gray-700"
+            className="text-center py-20 bg-white rounded-2xl shadow-lg border-2 border-dashed border-[#A69677]"
           >
-            <Database className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+            <Database className="w-16 h-16 text-black mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-black mb-2">
               {searchQuery ? 'No projects found' : 'No projects yet'}
             </h3>
-            <p className="text-gray-600 dark:text-gray-400 mb-6">
+            <p className="text-black mb-6">
               {searchQuery ? 'Try a different search term' : 'Create your first project to get started!'}
             </p>
             {!searchQuery && (
@@ -387,7 +387,7 @@ export default function DashboardPage() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setShowCreateModal(true)}
-                className="px-6 py-3 bg-gradient-to-r from-primary-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-primary-700 hover:to-indigo-700 transition-all shadow-lg"
+                className="px-6 py-3 bg-[#403B33] text-white rounded-xl font-semibold hover:bg-[#2d2822] transition-all shadow-lg"
               >
                 Create Project
               </motion.button>
@@ -404,27 +404,27 @@ export default function DashboardPage() {
                 whileHover={{ y: -8, scale: 1.02 }}
               >
                 <Link href={`/project/${project.id}`}>
-                  <div className="bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 p-8 border-2 border-gray-100 hover:border-primary-300 h-full flex flex-col group cursor-pointer relative overflow-hidden">
-                    {/* Gradient Background Effect */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-primary-50/0 via-indigo-50/0 to-purple-50/0 group-hover:from-primary-50/50 group-hover:via-indigo-50/50 group-hover:to-purple-50/50 transition-all duration-300" />
+                  <div className="bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 p-8 border-2 border-[#A69677] hover:border-[#0D0D0D] h-full flex flex-col group cursor-pointer relative overflow-hidden">
+                    {/* Background Effect */}
+                    <div className="absolute inset-0 bg-[#D9BFA0]/0 group-hover:bg-[#D9BFA0]/30 transition-all duration-300" />
                     
                     <div className="relative z-10">
                       <div className="flex items-start justify-between mb-6">
-                        <div className="p-4 bg-gradient-to-br from-primary-500 via-indigo-500 to-purple-500 rounded-2xl group-hover:scale-110 transition-transform shadow-lg">
+                        <div className="p-4 bg-[#403B33] rounded-2xl group-hover:scale-110 transition-transform shadow-lg">
                           <Database className="w-8 h-8 text-white" />
                         </div>
-                        <TrendingUp className="w-6 h-6 text-gray-300 group-hover:text-primary-600 transition transform group-hover:rotate-12" />
+                        <TrendingUp className="w-6 h-6 text-[#BF8A49] group-hover:text-[#403B33] transition transform group-hover:rotate-12" />
                       </div>
-                      <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition">
+                      <h3 className="text-2xl font-bold text-black mb-3 group-hover:text-[#403B33] transition">
                         {project.name}
                       </h3>
                       {project.description && (
-                        <p className="text-gray-600 dark:text-gray-400 text-sm mb-6 flex-1 line-clamp-3 leading-relaxed">
+                        <p className="text-black/70 text-sm mb-6 flex-1 line-clamp-3 leading-relaxed">
                           {project.description}
                         </p>
                       )}
-                      <div className="flex items-center justify-between pt-6 border-t-2 border-gray-100 dark:border-gray-700">
-                        <span className="text-sm text-gray-500 dark:text-gray-400 font-medium flex items-center gap-2">
+                      <div className="flex items-center justify-between pt-6 border-t-2 border-[#A69677]">
+                        <span className="text-sm text-black/70 font-medium flex items-center gap-2">
                           <Clock className="w-4 h-4" />
                           {new Date(project.created_at).toLocaleDateString('en-US', { 
                             month: 'short', 
@@ -432,7 +432,7 @@ export default function DashboardPage() {
                             year: 'numeric' 
                           })}
                         </span>
-                        <span className="text-primary-600 dark:text-primary-400 font-bold text-base group-hover:translate-x-2 transition-transform flex items-center gap-1">
+                        <span className="text-[#403B33] font-bold text-base group-hover:translate-x-2 transition-transform flex items-center gap-1">
                           Open
                           <span className="text-xl">→</span>
                         </span>
@@ -459,15 +459,15 @@ export default function DashboardPage() {
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full"
+            className="bg-white rounded-2xl shadow-2xl max-w-md w-full border-2 border-[#A69677]"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Create New Project</h3>
+            <div className="p-6 border-b-2 border-[#A69677]">
+              <h3 className="text-2xl font-bold text-black">Create New Project</h3>
             </div>
             <form onSubmit={handleCreateProject} className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-black mb-2">
                   Project Name
                 </label>
                 <input
@@ -475,18 +475,18 @@ export default function DashboardPage() {
                   required
                   value={projectName}
                   onChange={(e) => setProjectName(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className="w-full px-4 py-3 border-2 border-[#A69677] rounded-xl focus:ring-2 focus:ring-[#403B33] focus:border-[#403B33] bg-white text-black"
                   placeholder="My Analytics Project"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-black mb-2">
                   Description (Optional)
                 </label>
                 <textarea
                   value={projectDesc}
                   onChange={(e) => setProjectDesc(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className="w-full px-4 py-3 border-2 border-[#A69677] rounded-xl focus:ring-2 focus:ring-[#403B33] focus:border-[#403B33] bg-white text-black"
                   rows={3}
                   placeholder="Project description..."
                 />
@@ -494,14 +494,14 @@ export default function DashboardPage() {
               <div className="flex gap-4 pt-4">
                 <button
                   type="submit"
-                  className="flex-1 bg-gradient-to-r from-primary-600 to-indigo-600 text-white py-3 px-4 rounded-xl font-semibold hover:from-primary-700 hover:to-indigo-700 transition shadow-lg"
+                  className="flex-1 bg-[#403B33] text-white py-3 px-4 rounded-xl font-semibold hover:bg-[#2d2822] transition shadow-lg"
                 >
                   Create
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}
-                  className="flex-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 py-3 px-4 rounded-xl font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+                  className="flex-1 bg-[#BF8A49] text-white py-3 px-4 rounded-xl font-semibold hover:bg-[#A6753A] transition"
                 >
                   Cancel
                 </button>

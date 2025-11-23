@@ -65,15 +65,15 @@ export default function FileUpload({ projectId, onUploaded }: FileUploadProps) {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white rounded-xl shadow-lg p-6"
+      className="bg-white rounded-xl shadow-lg p-6 border-2 border-[#A69677]"
     >
       <div className="flex items-center gap-3 mb-4">
-        <div className="p-2 bg-blue-100 rounded-lg">
-          <Upload className="w-5 h-5 text-blue-600" />
+        <div className="p-2 bg-[#BF8A49] rounded-lg">
+          <Upload className="w-5 h-5 text-white" />
         </div>
         <div>
-          <h2 className="text-xl font-semibold text-gray-900">Upload Dataset</h2>
-          <p className="text-sm text-gray-500">Drag & drop or click to select</p>
+          <h2 className="text-xl font-semibold text-black">Upload Dataset</h2>
+          <p className="text-sm text-black/70">Drag & drop or click to select</p>
         </div>
       </div>
       
@@ -81,8 +81,8 @@ export default function FileUpload({ projectId, onUploaded }: FileUploadProps) {
         {...getRootProps()}
         className={`relative border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all ${
           isDragActive
-            ? 'border-primary-600 bg-primary-50 scale-105'
-            : 'border-gray-300 hover:border-primary-400 hover:bg-gray-50'
+            ? 'border-[#403B33] bg-[#D9BFA0] scale-105'
+            : 'border-2 border-[#A69677] hover:border-[#403B33] hover:bg-[#D9BFA0]'
         } ${uploading ? 'pointer-events-none opacity-50' : ''}`}
       >
         <input {...getInputProps()} />
@@ -91,9 +91,9 @@ export default function FileUpload({ projectId, onUploaded }: FileUploadProps) {
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-              className="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full mb-3"
+              className="w-12 h-12 border-4 border-[#403B33] border-t-transparent rounded-full mb-3"
             />
-            <p className="text-primary-600 font-semibold">Uploading...</p>
+            <p className="text-[#403B33] font-semibold">Uploading...</p>
           </div>
         ) : (
           <>
@@ -101,16 +101,16 @@ export default function FileUpload({ projectId, onUploaded }: FileUploadProps) {
               whileHover={{ scale: 1.1 }}
               className="inline-block mb-4"
             >
-              <File className="w-12 h-12 text-gray-400 mx-auto" />
+              <File className="w-12 h-12 text-black/40 mx-auto" />
             </motion.div>
-            <p className="text-gray-700 font-medium mb-2">
+            <p className="text-black font-medium mb-2">
               {isDragActive ? 'Drop file here' : 'Drag & drop a file here'}
             </p>
-            <p className="text-sm text-gray-500 mb-2">or</p>
-            <p className="text-sm text-primary-600 font-semibold hover:underline">
+            <p className="text-sm text-black/70 mb-2">or</p>
+            <p className="text-sm text-[#403B33] font-semibold hover:underline">
               Browse files
             </p>
-            <p className="text-xs text-gray-500 mt-4">
+            <p className="text-xs text-black/70 mt-4">
               Supports CSV, XLS, XLSX, XLSM, XLSB (Max 1GB)
             </p>
           </>

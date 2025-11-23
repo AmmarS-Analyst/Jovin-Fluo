@@ -104,64 +104,64 @@ export default function DataTable({
       )}
 
       {/* Table */}
-      <div className="overflow-x-auto border-2 border-gray-200 dark:border-gray-700 rounded-lg">
-        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-          <thead className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
-            <tr>
-              {columns.map((col, idx) => (
-                <th
-                  key={idx}
-                  className={`px-4 py-3 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider border-r border-gray-200 dark:border-gray-700 last:border-r-0 ${
-                    col.sortable !== false && sortable ? 'cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-800' : ''
-                  }`}
-                  onClick={() => col.sortable !== false && handleSort(idx)}
-                >
-                  <div className="flex items-center gap-2">
-                    <span>{col.label || col.name}</span>
-                    {col.sortable !== false && sortable && (
-                      <div className="flex flex-col">
-                        {sortConfig?.key === idx ? (
-                          sortConfig.direction === 'asc' ? (
-                            <ArrowUp className="w-3 h-3 text-primary-600" />
-                          ) : (
-                            <ArrowDown className="w-3 h-3 text-primary-600" />
-                          )
-                        ) : (
-                          <ArrowUpDown className="w-3 h-3 text-gray-400" />
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-            {paginatedData.length === 0 ? (
+      <div className="border-2 border-gray-200 dark:border-gray-700 rounded-lg">
+        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700" style={{ width: 'max-content', minWidth: '100%' }}>
+            <thead className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
               <tr>
-                <td colSpan={columns.length} className="px-4 py-12 text-center text-gray-500 dark:text-gray-400">
-                  No data found
-                </td>
+                {columns.map((col, idx) => (
+                  <th
+                    key={idx}
+                    className={`px-4 py-3 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider border-r border-gray-200 dark:border-gray-700 last:border-r-0 ${
+                      col.sortable !== false && sortable ? 'cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-800' : ''
+                    }`}
+                    onClick={() => col.sortable !== false && handleSort(idx)}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span>{col.label || col.name}</span>
+                      {col.sortable !== false && sortable && (
+                        <div className="flex flex-col">
+                          {sortConfig?.key === idx ? (
+                            sortConfig.direction === 'asc' ? (
+                              <ArrowUp className="w-3 h-3 text-primary-600" />
+                            ) : (
+                              <ArrowDown className="w-3 h-3 text-primary-600" />
+                            )
+                          ) : (
+                            <ArrowUpDown className="w-3 h-3 text-gray-400" />
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </th>
+                ))}
               </tr>
-            ) : (
-              paginatedData.map((row, rowIdx) => (
-                <motion.tr
-                  key={rowIdx}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: rowIdx * 0.01 }}
-                  className="hover:bg-blue-50 dark:hover:bg-gray-700 transition"
-                >
-                  {row.map((cell, cellIdx) => (
-                    <td
-                      key={cellIdx}
-                      className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300 border-r border-gray-100 dark:border-gray-700 last:border-r-0"
-                    >
-                      {cell !== null && cell !== undefined ? String(cell) : <span className="text-gray-400 italic">null</span>}
-                    </td>
-                  ))}
-                </motion.tr>
-              ))
+            </thead>
+            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+              {paginatedData.length === 0 ? (
+                <tr>
+                  <td colSpan={columns.length} className="px-4 py-12 text-center text-gray-500 dark:text-gray-400">
+                    No data found
+                  </td>
+                </tr>
+              ) : (
+                paginatedData.map((row, rowIdx) => (
+                  <motion.tr
+                    key={rowIdx}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: rowIdx * 0.01 }}
+                    className="hover:bg-blue-50 dark:hover:bg-gray-700 transition"
+                  >
+                    {row.map((cell, cellIdx) => (
+                      <td
+                        key={cellIdx}
+                        className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300 border-r border-gray-100 dark:border-gray-700 last:border-r-0"
+                      >
+                        {cell !== null && cell !== undefined ? String(cell) : <span className="text-gray-400 italic">null</span>}
+                      </td>
+                    ))}
+                  </motion.tr>
+                ))
             )}
           </tbody>
         </table>

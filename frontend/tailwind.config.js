@@ -1,6 +1,5 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  darkMode: 'class',
   content: [
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -9,21 +8,20 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        // Professional Enterprise Color Palette
+        bg: {
+          light: '#D9BFA0',  // Light beige background
+          medium: '#A69677',  // Medium tan background
+        },
         primary: {
-          50: '#f0f9ff',
-          100: '#e0f2fe',
-          200: '#bae6fd',
-          300: '#7dd3fc',
-          400: '#38bdf8',
-          500: '#0ea5e9',
-          600: '#0284c7',
-          700: '#0369a1',
-          800: '#075985',
-          900: '#0c4a6e',
+          dark: '#403B33',    // Dark brown for buttons/components
+          light: '#BF8A49',   // Golden brown for secondary buttons
+        },
+        accent: {
+          selected: '#0D0D0D', // Black for selected outlines
         },
       },
     },
   },
   plugins: [],
 }
-

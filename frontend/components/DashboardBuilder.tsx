@@ -199,7 +199,7 @@ export default function DashboardBuilder({ projectId, visualizations }: Dashboar
   const renderVisualization = (viz: any) => {
     if (!viz || !viz.config || !viz.config.data) {
       return (
-        <div className="flex items-center justify-center h-full text-gray-400">
+        <div className="flex items-center justify-center h-full text-black">
           <div className="text-center">
             <BarChart3 className="w-12 h-12 mx-auto mb-2 opacity-50" />
             <p className="text-sm">No data available</p>
@@ -275,7 +275,7 @@ export default function DashboardBuilder({ projectId, visualizations }: Dashboar
         )
       default:
         return (
-          <div className="flex items-center justify-center h-full text-gray-400">
+          <div className="flex items-center justify-center h-full text-black">
             <p className="text-sm">Chart type not supported</p>
           </div>
         )
@@ -283,17 +283,17 @@ export default function DashboardBuilder({ projectId, visualizations }: Dashboar
   }
 
   return (
-    <div className={`${isFullscreen ? 'fixed inset-0 z-50 bg-white dark:bg-gray-900' : ''} flex flex-col h-full`}>
+    <div className={`${isFullscreen ? 'fixed inset-0 z-50 bg-[#D9BFA0]' : ''} flex flex-col h-full`}>
       {/* Power BI-style Header */}
-      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 shadow-sm">
+      <div className="bg-white border-b-2 border-[#A69677] px-6 py-4 shadow-sm">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="p-2 bg-gradient-to-br from-primary-600 to-indigo-600 rounded-lg">
+            <div className="p-2 bg-[#403B33] rounded-lg">
               <LayoutGrid className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Dashboard Builder</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Create interactive dashboards with drag & drop</p>
+              <h2 className="text-2xl font-bold text-black">Dashboard Builder</h2>
+              <p className="text-sm text-black/70">Create interactive dashboards with drag & drop</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -303,8 +303,8 @@ export default function DashboardBuilder({ projectId, visualizations }: Dashboar
               onClick={() => setIsEditMode(!isEditMode)}
               className={`px-4 py-2 rounded-lg font-medium transition flex items-center gap-2 ${
                 isEditMode 
-                  ? 'bg-primary-600 text-white' 
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                  ? 'bg-[#403B33] text-white' 
+                  : 'bg-[#BF8A49] text-white'
               }`}
             >
               {isEditMode ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -314,15 +314,15 @@ export default function DashboardBuilder({ projectId, visualizations }: Dashboar
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setIsFullscreen(!isFullscreen)}
-              className="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition"
+              className="p-2 bg-[#BF8A49] rounded-lg hover:bg-[#A6753A] transition"
             >
-              {isFullscreen ? <Minimize2 className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
+              {isFullscreen ? <Minimize2 className="w-5 h-5 text-white" /> : <Maximize2 className="w-5 h-5 text-white" />}
             </motion.button>
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={saveDashboard}
-              className="px-4 py-2 bg-gradient-to-r from-primary-600 to-indigo-600 text-white rounded-lg font-semibold hover:from-primary-700 hover:to-indigo-700 transition flex items-center gap-2 shadow-lg"
+              className="px-4 py-2 bg-[#403B33] text-white rounded-lg font-semibold hover:bg-[#2d2822] transition flex items-center gap-2 shadow-lg"
             >
               <Save className="w-4 h-4" />
               Save Dashboard
@@ -337,7 +337,7 @@ export default function DashboardBuilder({ projectId, visualizations }: Dashboar
             value={dashboardName}
             onChange={(e) => setDashboardName(e.target.value)}
             placeholder="Enter dashboard name..."
-            className="w-full max-w-md px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            className="w-full max-w-md px-4 py-2 border-2 border-[#A69677] rounded-lg bg-white text-black focus:ring-2 focus:ring-[#403B33] focus:border-[#403B33]"
           />
         </div>
       </div>
@@ -350,18 +350,18 @@ export default function DashboardBuilder({ projectId, visualizations }: Dashboar
               initial={{ width: 0, opacity: 0 }}
               animate={{ width: 320, opacity: 1 }}
               exit={{ width: 0, opacity: 0 }}
-              className="bg-gray-50 dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 overflow-y-auto"
+              className="bg-white border-r-2 border-[#A69677] overflow-y-auto"
             >
               <div className="p-4 space-y-4">
                 {/* Templates Section */}
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">Templates</h3>
+                    <h3 className="text-sm font-semibold text-black uppercase tracking-wide">Templates</h3>
                     <motion.button
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
                       onClick={() => setShowTemplates(!showTemplates)}
-                      className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                      className="text-black hover:text-black/70"
                     >
                       {showTemplates ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
                     </motion.button>
@@ -382,12 +382,12 @@ export default function DashboardBuilder({ projectId, visualizations }: Dashboar
                               whileHover={{ scale: 1.02, x: 4 }}
                               whileTap={{ scale: 0.98 }}
                               onClick={() => applyTemplate(template)}
-                              className="w-full p-3 bg-white dark:bg-gray-800 rounded-lg border-2 border-gray-200 dark:border-gray-700 hover:border-primary-500 transition text-left flex items-center gap-3"
+                              className="w-full p-3 bg-white rounded-lg border-2 border-[#A69677] hover:border-[#403B33] transition text-left flex items-center gap-3"
                             >
-                              <Icon className="w-5 h-5 text-primary-600" />
+                              <Icon className="w-5 h-5 text-[#403B33]" />
                               <div>
-                                <div className="font-medium text-sm text-gray-900 dark:text-white">{template.name}</div>
-                                <div className="text-xs text-gray-500 dark:text-gray-400">
+                                <div className="font-medium text-sm text-black">{template.name}</div>
+                                <div className="text-xs text-black/70">
                                   {template.layout.length} widget{template.layout.length !== 1 ? 's' : ''}
                                 </div>
                               </div>
@@ -401,14 +401,14 @@ export default function DashboardBuilder({ projectId, visualizations }: Dashboar
 
                 {/* Visualizations Section */}
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide mb-3">
+                  <h3 className="text-sm font-semibold text-black uppercase tracking-wide mb-3">
                     Visualizations ({visualizations.length})
                   </h3>
                   {visualizations.length === 0 ? (
-                    <div className="p-6 text-center bg-white dark:bg-gray-800 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700">
-                      <BarChart3 className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                      <p className="text-sm text-gray-500 dark:text-gray-400">No visualizations available</p>
-                      <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Create some in the Visualizations tab</p>
+                    <div className="p-6 text-center bg-white rounded-lg border-2 border-dashed border-[#A69677]">
+                      <BarChart3 className="w-8 h-8 text-black/40 mx-auto mb-2" />
+                      <p className="text-sm text-black">No visualizations available</p>
+                      <p className="text-xs text-black/70 mt-1">Create some in the Visualizations tab</p>
                     </div>
                   ) : (
                     <div className="space-y-2">
@@ -418,17 +418,17 @@ export default function DashboardBuilder({ projectId, visualizations }: Dashboar
                           whileHover={{ scale: 1.02, x: 4 }}
                           whileTap={{ scale: 0.98 }}
                           onClick={() => addVisualization(viz.id)}
-                          className="p-3 bg-white dark:bg-gray-800 rounded-lg border-2 border-gray-200 dark:border-gray-700 hover:border-primary-500 transition cursor-pointer group"
+                          className="p-3 bg-white rounded-lg border-2 border-[#A69677] hover:border-[#403B33] transition cursor-pointer group"
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2 flex-1 min-w-0">
-                              <GripVertical className="w-4 h-4 text-gray-400 group-hover:text-primary-600 transition" />
+                              <GripVertical className="w-4 h-4 text-black group-hover:text-black transition" />
                               <div className="flex-1 min-w-0">
-                                <div className="font-medium text-sm text-gray-900 dark:text-white truncate">{viz.name}</div>
-                                <div className="text-xs text-gray-500 dark:text-gray-400 capitalize">{viz.type}</div>
+                                <div className="font-medium text-sm text-black truncate">{viz.name}</div>
+                                <div className="text-xs text-black capitalize">{viz.type}</div>
                               </div>
                             </div>
-                            <Plus className="w-4 h-4 text-gray-400 group-hover:text-primary-600 transition" />
+                            <Plus className="w-4 h-4 text-black group-hover:text-black transition" />
                           </div>
                         </motion.div>
                       ))}
@@ -443,13 +443,13 @@ export default function DashboardBuilder({ projectId, visualizations }: Dashboar
         {/* Toggle Sidebar Button */}
         <button
           onClick={() => setShowVisualizationPanel(!showVisualizationPanel)}
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-white dark:bg-gray-800 border-r border-t border-b border-gray-200 dark:border-gray-700 rounded-r-lg shadow-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-white border-r-2 border-t-2 border-b-2 border-[#A69677] rounded-r-lg shadow-lg hover:bg-[#D9BFA0] transition"
         >
-          {showVisualizationPanel ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+          {showVisualizationPanel ? <X className="w-4 h-4 text-black" /> : <Plus className="w-4 h-4 text-black" />}
         </button>
 
         {/* Main Canvas Area */}
-        <div className="flex-1 overflow-auto bg-gray-100 dark:bg-gray-900 p-6">
+        <div className="flex-1 overflow-auto bg-[#D9BFA0] p-6">
           {layout.length === 0 ? (
             <div className="flex items-center justify-center h-full min-h-[600px]">
               <motion.div
@@ -457,10 +457,10 @@ export default function DashboardBuilder({ projectId, visualizations }: Dashboar
                 animate={{ opacity: 1, scale: 1 }}
                 className="text-center max-w-md"
               >
-                <div className="p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border-2 border-dashed border-gray-300 dark:border-gray-700">
-                  <LayoutGrid className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Empty Canvas</h3>
-                  <p className="text-gray-600 dark:text-gray-400 mb-6">
+                <div className="p-6 bg-white rounded-2xl shadow-xl border-2 border-dashed border-[#A69677]">
+                  <LayoutGrid className="w-16 h-16 text-black/40 mx-auto mb-4" />
+                  <h3 className="text-xl font-bold text-black mb-2">Empty Canvas</h3>
+                  <p className="text-black/70 mb-6">
                     Start building your dashboard by adding visualizations from the panel or applying a template
                   </p>
                   <div className="flex gap-3 justify-center">
@@ -468,7 +468,7 @@ export default function DashboardBuilder({ projectId, visualizations }: Dashboar
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => setShowTemplates(true)}
-                      className="px-4 py-2 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700 transition"
+                      className="px-4 py-2 bg-[#403B33] text-white rounded-lg font-medium hover:bg-[#2d2822] transition"
                     >
                       Browse Templates
                     </motion.button>
@@ -476,7 +476,7 @@ export default function DashboardBuilder({ projectId, visualizations }: Dashboar
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => setShowVisualizationPanel(true)}
-                      className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+                      className="px-4 py-2 bg-[#BF8A49] text-white rounded-lg font-medium hover:bg-[#A6753A] transition"
                     >
                       Add Visualization
                     </motion.button>
@@ -507,26 +507,26 @@ export default function DashboardBuilder({ projectId, visualizations }: Dashboar
                   return (
                     <div
                       key={item.i}
-                      className={`bg-white dark:bg-gray-800 rounded-xl shadow-lg border-2 transition-all relative group ${
+                      className={`bg-white rounded-xl shadow-lg border-2 transition-all relative group ${
                         isSelected 
-                          ? 'border-primary-500 ring-2 ring-primary-200 dark:ring-primary-800' 
-                          : 'border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-700'
+                          ? 'border-[#0D0D0D] ring-2 ring-[#403B33]' 
+                          : 'border-[#A69677] hover:border-[#403B33]'
                       }`}
                       onClick={() => isEditMode && setSelectedWidget(item.i)}
                     >
                       {/* Widget Header */}
-                      <div className={`px-4 py-2 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between ${
+                      <div className={`px-4 py-2 border-b-2 border-[#A69677] flex items-center justify-between ${
                         isEditMode ? 'cursor-move' : ''
                       }`}>
                         <div className="flex items-center gap-2 flex-1 min-w-0">
                           {isEditMode && (
-                            <GripVertical className="w-4 h-4 text-gray-400" />
+                            <GripVertical className="w-4 h-4 text-[#403B33]" />
                           )}
-                          <h4 className="font-semibold text-sm text-gray-900 dark:text-white truncate">
+                          <h4 className="font-semibold text-sm text-black truncate">
                             {viz?.name || 'Empty Widget'}
                           </h4>
                           {viz && (
-                            <span className="text-xs px-2 py-0.5 bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 rounded">
+                            <span className="text-xs px-2 py-0.5 bg-[#BF8A49] text-white rounded">
                               {viz.type}
                             </span>
                           )}
@@ -540,7 +540,7 @@ export default function DashboardBuilder({ projectId, visualizations }: Dashboar
                                 e.stopPropagation()
                                 duplicateWidget(item.i)
                               }}
-                              className="p-1.5 text-gray-600 hover:text-primary-600 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition"
+                              className="p-1.5 text-[#403B33] hover:bg-[#D9BFA0] rounded transition"
                               title="Duplicate"
                             >
                               <Copy className="w-4 h-4" />
@@ -552,7 +552,7 @@ export default function DashboardBuilder({ projectId, visualizations }: Dashboar
                                 e.stopPropagation()
                                 removeVisualization(item.i)
                               }}
-                              className="p-1.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition"
+                              className="p-1.5 text-[#BF8A49] hover:bg-[#BF8A49]/20 rounded transition"
                               title="Remove"
                             >
                               <Trash2 className="w-4 h-4" />
@@ -568,7 +568,7 @@ export default function DashboardBuilder({ projectId, visualizations }: Dashboar
                             {renderVisualization(viz)}
                           </ResponsiveContainer>
                         ) : (
-                          <div className="flex items-center justify-center h-full text-gray-400">
+                          <div className="flex items-center justify-center h-full text-black/70">
                             <div className="text-center">
                               <BarChart3 className="w-12 h-12 mx-auto mb-2 opacity-50" />
                               <p className="text-sm">No visualization selected</p>
