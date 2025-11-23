@@ -14,7 +14,7 @@ import {
 } from 'lucide-react'
 import api from '@/lib/api'
 import { showToast } from '@/lib/toast'
-import ColorPicker from './ColorPicker'
+import AdvancedColorPicker from './AdvancedColorPicker'
 import DraggableField from './DraggableField'
 
 interface VisualizationBuilderProps {
@@ -48,9 +48,14 @@ export default function VisualizationBuilder({ datasetId, profileData, projectId
   const [chartName, setChartName] = useState('')
   const [loading, setLoading] = useState(false)
   const [selectedForReport, setSelectedForReport] = useState<Set<number>>(new Set())
-  const [showSettingsPane, setShowSettingsPane] = useState(true)
+  const [activePane, setActivePane] = useState<'visuals' | 'format'>('visuals')
   const [chartConfig, setChartConfig] = useState({
-    colors: COLORS[0],
+    barColor: COLORS[0],
+    barColor2: COLORS[1],
+    legendColor: '#000000',
+    xAxisColor: '#000000',
+    yAxisColor: '#000000',
+    gridColor: '#E5E5E5',
     showGrid: true,
     showLegend: true,
     stacked: false,
@@ -271,21 +276,21 @@ export default function VisualizationBuilder({ datasetId, profileData, projectId
       case 'bar':
         return (
           <BarChart {...commonProps}>
-            {chartConfig.showGrid && <CartesianGrid strokeDasharray="3 3" />}
-            <XAxis dataKey={xAxis} />
-            <YAxis />
+            {chartConfig.showGrid && <CartesianGrid strokeDasharray="3 3" stroke={chartConfig.gridColor} />}
+            <XAxis dataKey={xAxis} stroke={chartConfig.xAxisColor} />
+            <YAxis stroke={chartConfig.yAxisColor} />
             <Tooltip />
-            {chartConfig.showLegend && <Legend />}
+            {chartConfig.showLegend && <Legend wrapperStyle={{ color: chartConfig.legendColor }} />}
             <Bar 
               dataKey={yAxis} 
-              fill={chartConfig.colors}
+              fill={chartConfig.barColor}
               barSize={chartConfig.barSize}
               stackId={chartConfig.stacked ? 'stack' : undefined}
             />
             {yAxis2 && (
               <Bar 
                 dataKey={yAxis2} 
-                fill={COLORS[1]}
+                fill={chartConfig.barColor2}
                 barSize={chartConfig.barSize}
                 stackId={chartConfig.stacked ? 'stack' : undefined}
               />
@@ -296,26 +301,26 @@ export default function VisualizationBuilder({ datasetId, profileData, projectId
       case 'line':
         return (
           <LineChart {...commonProps}>
-            {chartConfig.showGrid && <CartesianGrid strokeDasharray="3 3" />}
-            <XAxis dataKey={xAxis} />
-            <YAxis />
+            {chartConfig.showGrid && <CartesianGrid strokeDasharray="3 3" stroke={chartConfig.gridColor} />}
+            <XAxis dataKey={xAxis} stroke={chartConfig.xAxisColor} />
+            <YAxis stroke={chartConfig.yAxisColor} />
             <Tooltip />
-            {chartConfig.showLegend && <Legend />}
-            <Line type="monotone" dataKey={yAxis} stroke={chartConfig.colors} strokeWidth={2} />
-            {yAxis2 && <Line type="monotone" dataKey={yAxis2} stroke={COLORS[1]} strokeWidth={2} />}
+            {chartConfig.showLegend && <Legend wrapperStyle={{ color: chartConfig.legendColor }} />}
+            <Line type="monotone" dataKey={yAxis} stroke={chartConfig.barColor} strokeWidth={2} />
+            {yAxis2 && <Line type="monotone" dataKey={yAxis2} stroke={chartConfig.barColor2} strokeWidth={2} />}
             <Brush dataKey={xAxis} height={30} />
           </LineChart>
         )
       case 'area':
         return (
           <AreaChart {...commonProps}>
-            {chartConfig.showGrid && <CartesianGrid strokeDasharray="3 3" />}
-            <XAxis dataKey={xAxis} />
-            <YAxis />
+            {chartConfig.showGrid && <CartesianGrid strokeDasharray="3 3" stroke={chartConfig.gridColor} />}
+            <XAxis dataKey={xAxis} stroke={chartConfig.xAxisColor} />
+            <YAxis stroke={chartConfig.yAxisColor} />
             <Tooltip />
-            {chartConfig.showLegend && <Legend />}
-            <Area type="monotone" dataKey={yAxis} stroke={chartConfig.colors} fill={chartConfig.colors} fillOpacity={0.6} />
-            {yAxis2 && <Area type="monotone" dataKey={yAxis2} stroke={COLORS[1]} fill={COLORS[1]} fillOpacity={0.6} />}
+            {chartConfig.showLegend && <Legend wrapperStyle={{ color: chartConfig.legendColor }} />}
+            <Area type="monotone" dataKey={yAxis} stroke={chartConfig.barColor} fill={chartConfig.barColor} fillOpacity={0.6} />
+            {yAxis2 && <Area type="monotone" dataKey={yAxis2} stroke={chartConfig.barColor2} fill={chartConfig.barColor2} fillOpacity={0.6} />}
             <Brush dataKey={xAxis} height={30} />
           </AreaChart>
         )
@@ -336,54 +341,54 @@ export default function VisualizationBuilder({ datasetId, profileData, projectId
               ))}
             </Pie>
             <Tooltip />
-            {chartConfig.showLegend && <Legend />}
+            {chartConfig.showLegend && <Legend wrapperStyle={{ color: chartConfig.legendColor }} />}
           </PieChart>
         )
       case 'scatter':
         return (
           <ScatterChart {...commonProps}>
-            {chartConfig.showGrid && <CartesianGrid strokeDasharray="3 3" />}
-            <XAxis dataKey={xAxis} />
-            <YAxis dataKey={yAxis} />
+            {chartConfig.showGrid && <CartesianGrid strokeDasharray="3 3" stroke={chartConfig.gridColor} />}
+            <XAxis dataKey={xAxis} stroke={chartConfig.xAxisColor} />
+            <YAxis dataKey={yAxis} stroke={chartConfig.yAxisColor} />
             <Tooltip />
-            {chartConfig.showLegend && <Legend />}
-            <Scatter dataKey={yAxis} fill={chartConfig.colors} />
+            {chartConfig.showLegend && <Legend wrapperStyle={{ color: chartConfig.legendColor }} />}
+            <Scatter dataKey={yAxis} fill={chartConfig.barColor} />
           </ScatterChart>
         )
       case 'composed':
         return (
           <ComposedChart {...commonProps}>
-            {chartConfig.showGrid && <CartesianGrid strokeDasharray="3 3" />}
-            <XAxis dataKey={xAxis} />
-            <YAxis yAxisId="left" />
-            {yAxis2 && <YAxis yAxisId="right" orientation="right" />}
+            {chartConfig.showGrid && <CartesianGrid strokeDasharray="3 3" stroke={chartConfig.gridColor} />}
+            <XAxis dataKey={xAxis} stroke={chartConfig.xAxisColor} />
+            <YAxis yAxisId="left" stroke={chartConfig.yAxisColor} />
+            {yAxis2 && <YAxis yAxisId="right" orientation="right" stroke={chartConfig.yAxisColor} />}
             <Tooltip />
-            {chartConfig.showLegend && <Legend />}
-            <Bar dataKey={yAxis} fill={chartConfig.colors} yAxisId="left" />
-            {yAxis2 && <Line type="monotone" dataKey={yAxis2} stroke={COLORS[1]} yAxisId="right" />}
+            {chartConfig.showLegend && <Legend wrapperStyle={{ color: chartConfig.legendColor }} />}
+            <Bar dataKey={yAxis} fill={chartConfig.barColor} yAxisId="left" />
+            {yAxis2 && <Line type="monotone" dataKey={yAxis2} stroke={chartConfig.barColor2} yAxisId="right" />}
             <Brush dataKey={xAxis} height={30} />
           </ComposedChart>
         )
       case 'histogram':
         return (
           <BarChart {...commonProps}>
-            {chartConfig.showGrid && <CartesianGrid strokeDasharray="3 3" />}
-            <XAxis dataKey="range" />
-            <YAxis />
+            {chartConfig.showGrid && <CartesianGrid strokeDasharray="3 3" stroke={chartConfig.gridColor} />}
+            <XAxis dataKey="range" stroke={chartConfig.xAxisColor} />
+            <YAxis stroke={chartConfig.yAxisColor} />
             <Tooltip />
-            {chartConfig.showLegend && <Legend />}
-            <Bar dataKey="count" fill={chartConfig.colors} />
+            {chartConfig.showLegend && <Legend wrapperStyle={{ color: chartConfig.legendColor }} />}
+            <Bar dataKey="count" fill={chartConfig.barColor} />
           </BarChart>
         )
       case 'waterfall':
         return (
           <BarChart {...commonProps}>
-            {chartConfig.showGrid && <CartesianGrid strokeDasharray="3 3" />}
-            <XAxis dataKey={xAxis} />
-            <YAxis />
+            {chartConfig.showGrid && <CartesianGrid strokeDasharray="3 3" stroke={chartConfig.gridColor} />}
+            <XAxis dataKey={xAxis} stroke={chartConfig.xAxisColor} />
+            <YAxis stroke={chartConfig.yAxisColor} />
             <Tooltip />
-            {chartConfig.showLegend && <Legend />}
-            <Bar dataKey={yAxis} fill={chartConfig.colors} />
+            {chartConfig.showLegend && <Legend wrapperStyle={{ color: chartConfig.legendColor }} />}
+            <Bar dataKey={yAxis} fill={chartConfig.barColor} />
             {chartData.map((item, idx) => (
               <ReferenceLine 
                 key={idx} 
@@ -414,7 +419,7 @@ export default function VisualizationBuilder({ datasetId, profileData, projectId
                   cx="128"
                   cy="128"
                   r="100"
-                  stroke={chartConfig.colors}
+                  stroke={chartConfig.barColor}
                   strokeWidth="20"
                   fill="none"
                   strokeDasharray={`${2 * Math.PI * 100}`}
@@ -425,7 +430,7 @@ export default function VisualizationBuilder({ datasetId, profileData, projectId
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center">
                   <div className="text-3xl font-bold">{gaugeValue.toFixed(2)}</div>
-                  <div className="text-sm text-gray-500">of {gaugeMax.toFixed(2)}</div>
+                  <div className="text-sm text-black">of {gaugeMax.toFixed(2)}</div>
                 </div>
               </div>
             </div>
@@ -454,41 +459,61 @@ export default function VisualizationBuilder({ datasetId, profileData, projectId
           </div>
         )
       default:
-        return <BarChart {...commonProps}><Bar dataKey={yAxis} fill={chartConfig.colors} /></BarChart>
+        return <BarChart {...commonProps}><Bar dataKey={yAxis} fill={chartConfig.barColor} /></BarChart>
     }
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+    <div className="bg-white rounded-xl shadow-lg p-6 border-2 border-[#A69677]">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
-            <BarChart3 className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+          <div className="p-2 bg-[#403B33] rounded-lg">
+            <BarChart3 className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Visualizations</h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Create interactive charts and graphs</p>
+            <h2 className="text-2xl font-bold text-black">Visualizations</h2>
+            <p className="text-sm text-black/70">Create interactive charts and graphs</p>
           </div>
         </div>
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setShowSettingsPane(!showSettingsPane)}
-          className="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition flex items-center gap-2"
-        >
-          <Settings className="w-5 h-5" />
-          <span className="text-sm font-medium">Settings</span>
-          <ChevronRight className={`w-4 h-4 transition-transform ${showSettingsPane ? 'rotate-90' : ''}`} />
-        </motion.button>
       </div>
 
-      <div className="space-y-6">
-        {/* Top Section - Chart Builder and Preview */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Panel - Chart Builder */}
-          <div className="lg:col-span-1 space-y-4">
+      <div className="flex gap-6" style={{ height: 'calc(100vh - 12rem)' }}>
+        {/* Left Panel - Visuals Pane (Chart Builder) */}
+        <div className={`flex flex-col transition-all duration-300 ${activePane === 'visuals' ? 'flex-1' : 'w-80 flex-shrink-0'}`}>
+          <div className="bg-white rounded-xl shadow-lg p-6 border-2 border-[#A69677] flex flex-col h-full">
+            {/* Toggle Pane Header */}
+            <div className="flex items-center gap-2 mb-4 flex-shrink-0 border-b-2 border-[#A69677] pb-3">
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setActivePane('visuals')}
+                className={`flex-1 px-4 py-2 rounded-lg font-medium transition ${
+                  activePane === 'visuals'
+                    ? 'bg-[#403B33] text-white'
+                    : 'bg-[#D9BFA0] text-black hover:bg-[#BF8A49] hover:text-white'
+                }`}
+              >
+                Visuals
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setActivePane('format')}
+                className={`flex-1 px-4 py-2 rounded-lg font-medium transition ${
+                  activePane === 'format'
+                    ? 'bg-[#403B33] text-white'
+                    : 'bg-[#D9BFA0] text-black hover:bg-[#BF8A49] hover:text-white'
+                }`}
+              >
+                Format
+              </motion.button>
+            </div>
+
+            {/* Visuals Pane Content */}
+            {activePane === 'visuals' && (
+              <div className="flex-1 overflow-y-auto pr-2 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Chart Type</label>
+            <label className="block text-sm font-medium text-black mb-2">Chart Type</label>
             <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto">
               {CHART_TYPES.map((type) => {
                 const Icon = type.icon
@@ -500,8 +525,8 @@ export default function VisualizationBuilder({ datasetId, profileData, projectId
                     onClick={() => setChartType(type.value)}
                     className={`p-3 rounded-lg border-2 transition ${
                       chartType === type.value
-                        ? 'border-primary-600 bg-primary-50 dark:bg-primary-900'
-                        : 'border-gray-200 dark:border-gray-700 hover:border-primary-300'
+                        ? 'border-[#0D0D0D] bg-white'
+                        : 'border-2 border-[#A69677] hover:border-[#403B33]'
                     }`}
                   >
                     <Icon className="w-5 h-5 mx-auto mb-1" />
@@ -514,10 +539,10 @@ export default function VisualizationBuilder({ datasetId, profileData, projectId
 
           {/* Available Fields - Draggable */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-black mb-2">
               Available Fields (Drag to axes below)
             </label>
-            <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto p-2 bg-gray-50 dark:bg-gray-900 rounded-lg">
+            <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto p-2 bg-[#D9BFA0] rounded-lg border-2 border-[#A69677]">
               {availableFields.map((col) => (
                 <div
                   key={col.name}
@@ -526,7 +551,7 @@ export default function VisualizationBuilder({ datasetId, profileData, projectId
                     e.dataTransfer.effectAllowed = 'move'
                     e.dataTransfer.setData('text/plain', JSON.stringify({ field: col.name, type: col.type }))
                   }}
-                  className="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg cursor-move text-sm font-medium text-gray-700 dark:text-gray-300 hover:border-primary-400 transition hover:scale-105"
+                  className="px-3 py-2 bg-white border-2 border-[#A69677] rounded-lg cursor-move text-sm font-medium text-black hover:border-[#403B33] transition hover:scale-105"
                 >
                   {col.name}
                 </div>
@@ -536,7 +561,7 @@ export default function VisualizationBuilder({ datasetId, profileData, projectId
 
           {/* X-Axis Drop Zone */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">X-Axis (Category)</label>
+            <label className="block text-sm font-medium text-black mb-2">X-Axis (Category)</label>
             <div
               onDragOver={(e) => {
                 e.preventDefault()
@@ -555,7 +580,7 @@ export default function VisualizationBuilder({ datasetId, profileData, projectId
                   console.error('Failed to parse drag data:', error)
                 }
               }}
-              className="min-h-[60px] p-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900 hover:border-primary-400 transition"
+              className="min-h-[60px] p-3 border-2 border-dashed border-[#A69677] rounded-lg bg-white hover:border-[#403B33] transition"
             >
               {xAxis ? (
                 <DraggableField
@@ -565,7 +590,7 @@ export default function VisualizationBuilder({ datasetId, profileData, projectId
                   onDrop={handleFieldDrop}
                 />
               ) : (
-                <div className="text-center text-gray-400 dark:text-gray-500 text-sm py-2">
+                <div className="text-center text-black text-sm py-2">
                   Drag a field here or select from dropdown
                 </div>
               )}
@@ -574,7 +599,7 @@ export default function VisualizationBuilder({ datasetId, profileData, projectId
 
           {/* Y-Axis Drop Zone */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Y-Axis (Value)</label>
+            <label className="block text-sm font-medium text-black mb-2">Y-Axis (Value)</label>
             <div
               onDragOver={(e) => {
                 e.preventDefault()
@@ -593,7 +618,7 @@ export default function VisualizationBuilder({ datasetId, profileData, projectId
                   console.error('Failed to parse drag data:', error)
                 }
               }}
-              className="min-h-[60px] p-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900 hover:border-primary-400 transition"
+              className="min-h-[60px] p-3 border-2 border-dashed border-[#A69677] rounded-lg bg-white hover:border-[#403B33] transition"
             >
               {yAxis ? (
                 <DraggableField
@@ -603,7 +628,7 @@ export default function VisualizationBuilder({ datasetId, profileData, projectId
                   onDrop={handleFieldDrop}
                 />
               ) : (
-                <div className="text-center text-gray-400 dark:text-gray-500 text-sm py-2">
+                <div className="text-center text-black text-sm py-2">
                   Drag a numeric field here
                 </div>
               )}
@@ -613,7 +638,7 @@ export default function VisualizationBuilder({ datasetId, profileData, projectId
           {/* Y-Axis 2 Drop Zone */}
           {(chartType === 'composed' || chartType === 'bar' || chartType === 'line' || chartType === 'area') && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Y-Axis 2 (Optional)</label>
+              <label className="block text-sm font-medium text-black mb-2">Y-Axis 2 (Optional)</label>
               <div
                 onDragOver={(e) => {
                   e.preventDefault()
@@ -632,7 +657,7 @@ export default function VisualizationBuilder({ datasetId, profileData, projectId
                     console.error('Failed to parse drag data:', error)
                   }
                 }}
-                className="min-h-[60px] p-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900 hover:border-primary-400 transition"
+                className="min-h-[60px] p-3 border-2 border-dashed border-[#A69677] rounded-lg bg-white hover:border-[#403B33] transition"
               >
                 {yAxis2 ? (
                   <DraggableField
@@ -642,7 +667,7 @@ export default function VisualizationBuilder({ datasetId, profileData, projectId
                     onDrop={handleFieldDrop}
                   />
                 ) : (
-                  <div className="text-center text-gray-400 dark:text-gray-500 text-sm py-2">
+                  <div className="text-center text-black text-sm py-2">
                     Drag a numeric field here (optional)
                   </div>
                 )}
@@ -655,7 +680,7 @@ export default function VisualizationBuilder({ datasetId, profileData, projectId
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => generateChart()}
-            className="w-full bg-gradient-to-r from-primary-600 to-indigo-600 text-white py-3 px-4 rounded-lg font-semibold hover:from-primary-700 hover:to-indigo-700 transition shadow-md"
+            className="w-full bg-[#403B33] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#2d2822] transition shadow-md"
           >
             Generate Chart
           </motion.button>
@@ -671,172 +696,147 @@ export default function VisualizationBuilder({ datasetId, profileData, projectId
                 value={chartName}
                 onChange={(e) => setChartName(e.target.value)}
                 placeholder="Chart name..."
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="w-full px-4 py-2 border-2 border-[#A69677] rounded-lg focus:ring-2 focus:ring-[#403B33] focus:border-[#403B33] bg-white text-black"
               />
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={saveVisualization}
                 disabled={loading}
-                className="w-full bg-green-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-green-700 transition flex items-center justify-center gap-2 disabled:opacity-50"
+                className="w-full bg-[#403B33] text-white py-2 px-4 rounded-lg font-semibold hover:bg-[#2d2822] transition flex items-center justify-center gap-2 disabled:opacity-50"
               >
                 <Save className="w-4 h-4" />
                 {loading ? 'Saving...' : 'Save Visualization'}
               </motion.button>
             </motion.div>
           )}
-        </div>
+              </div>
+            )}
 
-          {/* Chart Preview */}
-          <div className="lg:col-span-2">
-            {chartData.length > 0 ? (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="bg-gray-50 dark:bg-gray-900 rounded-xl p-6 border-2 border-gray-200 dark:border-gray-700 h-full min-h-[500px]"
-              >
-                <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">{chartName || 'Chart Preview'}</h3>
-                <div className="h-[450px]">
-                  {chartData.length > 0 && (
-                    <ResponsiveContainer width="100%" height="100%">
-                      {renderChart()}
-                    </ResponsiveContainer>
+            {/* Format Pane Content */}
+            {activePane === 'format' && (
+              <FormatPaneContent 
+                chartConfig={chartConfig}
+                setChartConfig={setChartConfig}
+                chartData={chartData}
+                generateChart={generateChart}
+                chartType={chartType}
+                yAxis2={yAxis2}
+              />
+            )}
+                  
+                  <div className="flex items-center justify-between p-3 bg-white rounded-lg border-2 border-[#A69677]">
+                    <label htmlFor="showGrid" className="text-sm font-medium text-black cursor-pointer">
+                      Show Grid
+                    </label>
+                    <input
+                      type="checkbox"
+                      id="showGrid"
+                      checked={chartConfig.showGrid}
+                      onChange={(e) => {
+                        setChartConfig({ ...chartConfig, showGrid: e.target.checked })
+                        if (chartData.length > 0) generateChart()
+                      }}
+                      className="w-5 h-5 rounded border-2 border-[#A69677] text-[#403B33] focus:ring-[#403B33] cursor-pointer"
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between p-3 bg-white rounded-lg border-2 border-[#A69677]">
+                    <label htmlFor="showLegend" className="text-sm font-medium text-black cursor-pointer">
+                      Show Legend
+                    </label>
+                    <input
+                      type="checkbox"
+                      id="showLegend"
+                      checked={chartConfig.showLegend}
+                      onChange={(e) => {
+                        setChartConfig({ ...chartConfig, showLegend: e.target.checked })
+                        if (chartData.length > 0) generateChart()
+                      }}
+                      className="w-5 h-5 rounded border-2 border-[#A69677] text-[#403B33] focus:ring-[#403B33] cursor-pointer"
+                    />
+                  </div>
+
+                  {(chartType === 'bar' || chartType === 'area') && (
+                    <div className="flex items-center justify-between p-3 bg-white rounded-lg border-2 border-[#A69677]">
+                      <label htmlFor="stacked" className="text-sm font-medium text-black cursor-pointer">
+                        Stacked Bars
+                      </label>
+                      <input
+                        type="checkbox"
+                        id="stacked"
+                        checked={chartConfig.stacked}
+                        onChange={(e) => {
+                          setChartConfig({ ...chartConfig, stacked: e.target.checked })
+                          if (chartData.length > 0) generateChart()
+                        }}
+                        className="w-5 h-5 rounded border-2 border-[#A69677] text-[#403B33] focus:ring-[#403B33] cursor-pointer"
+                      />
+                    </div>
                   )}
-                </div>
-              </motion.div>
-            ) : (
-              <div className="bg-gray-50 dark:bg-gray-900 rounded-xl p-12 text-center border-2 border-dashed border-gray-300 dark:border-gray-700 h-full min-h-[500px] flex items-center justify-center">
-                <div>
-                  <BarChart3 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-600 dark:text-gray-400">Select axes and generate a chart to preview</p>
+
+                  {chartType === 'bar' && (
+                    <div className="p-3 bg-white rounded-lg border-2 border-[#A69677]">
+                      <label className="block text-sm font-medium text-black mb-2">
+                        Bar Size: {chartConfig.barSize}
+                      </label>
+                      <input
+                        type="range"
+                        min="10"
+                        max="100"
+                        value={chartConfig.barSize}
+                        onChange={(e) => {
+                          setChartConfig({ ...chartConfig, barSize: parseInt(e.target.value) })
+                          if (chartData.length > 0) generateChart()
+                        }}
+                        className="w-full h-2 bg-[#D9BFA0] rounded-lg appearance-none cursor-pointer"
+                        style={{
+                          background: `linear-gradient(to right, #403B33 0%, #403B33 ${chartConfig.barSize}%, #D9BFA0 ${chartConfig.barSize}%, #D9BFA0 100%)`
+                        }}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             )}
           </div>
         </div>
 
-        {/* Settings Pane - Below Chart */}
-        <AnimatePresence>
-          {showSettingsPane && (
+        {/* Right Panel - Chart Preview */}
+        <div className="flex-1 flex flex-col">
+          {chartData.length > 0 ? (
             <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="bg-gray-50 dark:bg-gray-900 rounded-xl p-6 border border-gray-200 dark:border-gray-700 overflow-hidden"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-white rounded-xl p-6 border-2 border-[#A69677] h-full flex flex-col"
             >
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Chart Settings</h3>
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={() => setShowSettingsPane(false)}
-                  className="p-1 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-                >
-                  <X className="w-4 h-4" />
-                </motion.button>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <ColorPicker
-                  color={chartConfig.colors}
-                  onChange={(color) => {
-                    setChartConfig({ ...chartConfig, colors: color })
-                    if (chartData.length > 0) {
-                      generateChart() // Regenerate chart with new color
-                    }
-                  }}
-                  label="Chart Color"
-                />
-
-                <div className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-                  <label htmlFor="showGrid" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Show Grid
-                  </label>
-                  <input
-                    type="checkbox"
-                    id="showGrid"
-                    checked={chartConfig.showGrid}
-                    onChange={(e) => {
-                      setChartConfig({ ...chartConfig, showGrid: e.target.checked })
-                      if (chartData.length > 0) {
-                        generateChart()
-                      }
-                    }}
-                    className="w-4 h-4 rounded text-primary-600 focus:ring-primary-500"
-                  />
-                </div>
-
-                <div className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-                  <label htmlFor="showLegend" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Show Legend
-                  </label>
-                  <input
-                    type="checkbox"
-                    id="showLegend"
-                    checked={chartConfig.showLegend}
-                    onChange={(e) => {
-                      setChartConfig({ ...chartConfig, showLegend: e.target.checked })
-                      if (chartData.length > 0) {
-                        generateChart()
-                      }
-                    }}
-                    className="w-4 h-4 rounded text-primary-600 focus:ring-primary-500"
-                  />
-                </div>
-
-                {(chartType === 'bar' || chartType === 'area') && (
-                  <div className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-                    <label htmlFor="stacked" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Stacked Bars
-                    </label>
-                    <input
-                      type="checkbox"
-                      id="stacked"
-                      checked={chartConfig.stacked}
-                      onChange={(e) => {
-                        setChartConfig({ ...chartConfig, stacked: e.target.checked })
-                        if (chartData.length > 0) {
-                          generateChart()
-                        }
-                      }}
-                      className="w-4 h-4 rounded text-primary-600 focus:ring-primary-500"
-                    />
-                  </div>
-                )}
-
-                {chartType === 'bar' && (
-                  <div className="p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Bar Size: {chartConfig.barSize}
-                    </label>
-                    <input
-                      type="range"
-                      min="10"
-                      max="100"
-                      value={chartConfig.barSize}
-                      onChange={(e) => {
-                        setChartConfig({ ...chartConfig, barSize: parseInt(e.target.value) })
-                        if (chartData.length > 0) {
-                          generateChart()
-                        }
-                      }}
-                      className="w-full"
-                    />
-                  </div>
+              <h3 className="text-lg font-semibold mb-4 text-black flex-shrink-0">{chartName || 'Chart Preview'}</h3>
+              <div className="flex-1 min-h-0">
+                {chartData.length > 0 && (
+                  <ResponsiveContainer width="100%" height="100%">
+                    {renderChart()}
+                  </ResponsiveContainer>
                 )}
               </div>
             </motion.div>
+          ) : (
+            <div className="bg-white rounded-xl p-12 text-center border-2 border-dashed border-[#A69677] h-full flex items-center justify-center">
+              <div>
+                <BarChart3 className="w-16 h-16 text-black/40 mx-auto mb-4" />
+                <p className="text-black/70">Select axes and generate a chart to preview</p>
+              </div>
+            </div>
           )}
-        </AnimatePresence>
+        </div>
       </div>
 
       {/* Saved Visualizations */}
       {savedVisualizations.length > 0 && (
-        <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+        <div className="mt-8 pt-6 border-t border-[#A69677]">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Saved Visualizations</h3>
+            <h3 className="text-lg font-semibold text-black">Saved Visualizations</h3>
             {selectedForReport.size > 0 && (
-              <span className="text-sm text-primary-600 dark:text-primary-400 font-medium">
+              <span className="text-sm text-black font-medium">
                 {selectedForReport.size} selected for report
               </span>
             )}
@@ -850,14 +850,14 @@ export default function VisualizationBuilder({ datasetId, profileData, projectId
                   whileHover={{ y: -5 }}
                   className={`p-4 rounded-lg border-2 transition ${
                     isSelected
-                      ? 'bg-primary-50 dark:bg-primary-900 border-primary-400 shadow-md'
-                      : 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-primary-300'
+                      ? 'bg-white border-[#0D0D0D] shadow-md'
+                      : 'bg-white border-[#A69677] hover:border-[#403B33]'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-semibold text-gray-900 dark:text-white">{viz.name}</h4>
+                    <h4 className="font-semibold text-black">{viz.name}</h4>
                     <div className="flex items-center gap-2">
-                      <span className="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded">
+                      <span className="text-xs px-2 py-1 bg-[#BF8A49] text-white rounded">
                         {viz.type}
                       </span>
                       <motion.button
@@ -866,8 +866,8 @@ export default function VisualizationBuilder({ datasetId, profileData, projectId
                         onClick={() => toggleReportSelection(viz.id)}
                         className={`p-1.5 rounded-lg transition ${
                           isSelected
-                            ? 'bg-primary-600 text-white'
-                            : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-300'
+                            ? 'bg-[#403B33] text-white'
+                            : 'bg-[#BF8A49] text-white hover:bg-[#A6753A]'
                         }`}
                         title={isSelected ? 'Remove from report' : 'Add to report'}
                       >
@@ -879,7 +879,7 @@ export default function VisualizationBuilder({ datasetId, profileData, projectId
                       </motion.button>
                     </div>
                   </div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <p className="text-sm text-black">
                     {viz.config?.x_axis} vs {viz.config?.y_axis}
                   </p>
                 </motion.div>
